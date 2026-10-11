@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="blue">#79b9ff</color>
+    <color name="colorAccent">@color/lime</color>
+    <color name="colorBackground">@color/paper</color>
+    <color name="colorOnPrimary">@color/ink</color>
+    <color name="colorOnSurface">@color/ink</color>
+    <color name="colorPrimary">@color/lime</color>
+    <color name="colorPrimaryDark">@color/lime_dark</color>
+    <color name="colorSurface">@color/paper</color>
+    <color name="coral">#ff7f66</color>
+    <color name="danger">#cf4f49</color>
+    <color name="gold">#edaf27</color>
+    <color name="green">#1a7f55</color>
+    <color name="ink">#18201d</color>
+    <color name="lime">#d9ff52</color>
+    <color name="lime_dark">#b9e72a</color>
+    <color name="line">#dde3df</color>
+    <color name="muted">#69736e</color>
+    <color name="paper">#f5f7f4</color>
+    <color name="violet">#b69aff</color>
+    <color name="white">#ffffff</color>
+    <string name="about_app">About the app</string>
+    <string name="about_description">SendBeta turns every attempt into something you can learn from—without getting between you and the wall.</string>
+    <string name="about_subtitle">A focused toolkit for climbers who want to move with intention.</string>
+    <string name="active_projects">Active projects</string>
+    <string name="add_route">Add route</string>
+    <string name="all_nearby">All nearby</string>
+    <string name="annotation_hint">Select a hold type, then place it directly on the paused frame.</string>
+    <string name="annotation_tools">Annotation tools</string>
+    <string name="app_name">SendBeta</string>
+    <string name="attempt_history">Attempt history</string>
+    <string name="beta_analyzer">Beta analyzer</string>
+    <string name="built_for_beta">Built for better beta</string>
+    <string name="camera_ready">Camera ready</string>
+    <string name="capture_beta">Capture beta</string>
+    <string name="capture_hint">Frame the full wall and keep the climber in view</string>
+    <string name="clear_annotations">Clear all annotations</string>
+    <string name="climb_smarter">Climb smarter.\nSend stronger.</string>
+    <string name="climbing_gyms">Climbing gyms</string>
+    <string name="climbing_stats">Climbing stats</string>
+    <string name="course">COMP3074 · Mobile App Dev I</string>
+    <string name="crux_hold">Crux hold</string>
+    <string name="developer">Ariana Cruz · 101346000</string>
+    <string name="explore_nearby">Explore nearby</string>
+    <string name="find_next_problem">Find your next problem</string>
+    <string name="finish_hold">Finish hold</string>
+    <string name="flip">Flip</string>
+    <string name="gallery">Gallery</string>
+    <string name="get_directions">Get directions</string>
+    <string name="hello_greeting">Hello, Ariana</string>
+    <string name="hero_subtitle">Two sends this week. One move closer to your first V7.</string>
+    <string name="hero_title">You\'re climbing stronger.</string>
+    <string name="home_subtitle">Ready for your next project?</string>
+    <string name="key_movement">Key movement</string>
+    <string name="log_attempt">Log an attempt</string>
+    <string name="map_subtitle">Find a wall and get moving</string>
+    <string name="mark_movement">Mark the movement</string>
+    <string name="movement_insight">Movement insight</string>
+    <string name="nav_about">About</string>
+    <string name="nav_capture">Capture</string>
+    <string name="nav_gyms">Gyms</string>
+    <string name="nav_home">Home</string>
+    <string name="nav_routes">Routes</string>
+    <string name="new_attempt">New attempt</string>
+    <string name="notes_cues">Notes &amp; cues</string>
+    <string name="opening_position">Opening position</string>
+    <string name="personal_beta">Personal beta</string>
+    <string name="project_details">Project details</string>
+    <string name="recent_beta">Recent beta</string>
+    <string name="record_beta">Record new beta</string>
+    <string name="role">Full-Stack Android</string>
+    <string name="route_details">Route details</string>
+    <string name="route_library">Route library</string>
+    <string name="route_profile">Route profile</string>
+    <string name="routes_subtitle">%d routes saved across 3 Toronto gyms</string>
+    <string name="save_analysis">Save analysis</string>
+    <string name="search_hint">Search routes or gyms…</string>
+    <string name="selected_gym">Selected gym</string>
+    <string name="splash_subtitle">Analyze every move. Send with intention.</string>
+    <string name="splash_tagline">Climb smarter beta.</string>
+    <string name="start_hold">Start hold</string>
+    <string name="team">Solo Developer</string>
+    <string name="top_grade">Top grade</string>
+    <string name="top_hold">Top hold</string>
+    <string name="total_sends">Total sends</string>
+    <string name="version">VERSION 1.0.0</string>
+    <string name="view_all_routes">View all routes</string>
+    <string name="view_github">View GitHub repository</string>
+    <string name="weekly_progress">Weekly progress</string>
+    <string name="your_season">Your season</string>
+    <style name="Base.Theme.SendBeta" parent="Theme.Material3.Light.NoActionBar">
+        
+        <item name="colorPrimary">@color/lime</item>
+        <item name="colorPrimaryDark">@color/lime_dark</item>
+        <item name="colorOnPrimary">@color/ink</item>
+        
+        
+        <item name="colorSurface">@color/paper</item>
+        <item name="colorOnSurface">@color/ink</item>
+        <item name="android:colorBackground">@color/paper</item>
+        <item name="android:windowBackground">@color/paper</item>
+        
+        
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+        
+        
+        <item name="materialCardViewStyle">@style/Widget.SendBeta.CardView</item>
+        
+        
+        <item name="chipStyle">@style/Widget.SendBeta.Chip</item>
+    </style>
+    <style name="TextAppearance.SendBeta.BottomNav.Active" parent="TextAppearance.Material3.LabelSmall">
+        <item name="android:textSize">10sp</item>
+        <item name="android:textColor">@color/ink</item>
+    </style>
+    <style name="TextAppearance.SendBeta.BottomNav.Inactive" parent="TextAppearance.Material3.LabelSmall">
+        <item name="android:textSize">10sp</item>
+        <item name="android:textColor">#6B7670</item>
+    </style>
+    <style name="Theme.SendBeta" parent="Base.Theme.SendBeta"/>
+    <style name="Widget.SendBeta.BottomNav.ActiveIndicator" parent="Widget.Material3.BottomNavigationView.ActiveIndicator">
+        <item name="android:color">@color/lime</item>
+        <item name="android:width">64dp</item>
+        <item name="android:height">32dp</item>
+    </style>
+    <style name="Widget.SendBeta.CardView" parent="Widget.Material3.CardView.Outlined">
+        <item name="cardBackgroundColor">@color/white</item>
+        <item name="cardCornerRadius">14dp</item>
+        <item name="cardElevation">0dp</item>
+        <item name="strokeColor">@color/line</item>
+        <item name="strokeWidth">1dp</item>
+    </style>
+    <style name="Widget.SendBeta.Chip" parent="Widget.Material3.Chip.Filter">
+        <item name="chipBackgroundColor">@color/chip_background_color</item>
+        <item name="chipStrokeColor">@color/line</item>
+        <item name="chipStrokeWidth">1dp</item>
+        <item name="android:textColor">@color/chip_text_color</item>
+        <item name="chipCornerRadius">20dp</item>
+    </style>
+</resources>

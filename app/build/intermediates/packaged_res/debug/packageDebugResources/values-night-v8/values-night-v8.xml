@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Base.Theme.SendBeta" parent="Theme.Material3.Light.NoActionBar">
+        
+        <item name="colorPrimary">@color/lime</item>
+        <item name="colorPrimaryDark">@color/lime_dark</item>
+        <item name="colorOnPrimary">@color/ink</item>
+        
+        
+        <item name="colorSurface">@color/paper</item>
+        <item name="colorOnSurface">@color/ink</item>
+        <item name="android:colorBackground">@color/paper</item>
+        <item name="android:windowBackground">@color/paper</item>
+        
+        
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+        
+        
+        <item name="materialCardViewStyle">@style/Widget.SendBeta.CardView</item>
+        
+        
+        <item name="chipStyle">@style/Widget.SendBeta.Chip</item>
+    </style>
+</resources>

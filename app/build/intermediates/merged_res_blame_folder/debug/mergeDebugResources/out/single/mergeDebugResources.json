@@ -1,0 +1,370 @@
+[
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_hold_badge_ink.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/hold_badge_ink.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/color_bottom_nav_colors.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/color/bottom_nav_colors.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_grade_badge_blue.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/grade_badge_blue.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/xml_data_extraction_rules.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/xml/data_extraction_rules.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_bottom_nav_background.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/bottom_nav_background.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_grade_badge_violet.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/grade_badge_violet.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_ic_check.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/ic_check.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_record_button_outer.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/record_button_outer.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_marker_lime.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/marker_lime.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_bottom_nav_item_bg.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/bottom_nav_item_bg.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_record_button_inner.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/record_button_inner.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_ic_back.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/ic_back.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_user_location_dot.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/user_location_dot.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/color_chip_text_color.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/color/chip_text_color.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_avatar_background.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/avatar_background.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_ic_step_forward.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/ic_step_forward.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_ic_pause.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/ic_pause.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_hold_badge_lime.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/hold_badge_lime.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_grade_badge_coral.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/grade_badge_coral.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_button_outlined.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/button_outlined.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_frame_corner_tr.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/frame_corner_tr.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_ic_camera_white.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/ic_camera_white.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_ic_flip_camera.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/ic_flip_camera.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_ic_chevron_right.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/ic_chevron_right.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_ic_search.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/ic_search.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_grade_track.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/grade_track.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_ic_map.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/ic_map.xml"
+    },
+    {
+        "merged": "com.example.sendbeta.app-debug-37:/color_bottom_nav_text_colors.xml.flat",
+        "source": "com.example.sendbeta.app-main-39:/color/bottom_nav_text_colors.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_ic_my_location.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/ic_my_location.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_play_button_background.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/play_button_background.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/layout_fragment_route_detail.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/layout/fragment_route_detail.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/layout_item_attempt.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/layout/item_attempt.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_ic_launcher_background.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/ic_launcher_background.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_ic_route.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/ic_route.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_route_icon_violet.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/route_icon_violet.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_play_button_lime.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/play_button_lime.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_button_lime.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/button_lime.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_ic_spark.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/ic_spark.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_stat_badge.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/stat_badge.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/layout_fragment_map.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/layout/fragment_map.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_ic_arrow_forward.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/ic_arrow_forward.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_ic_minus.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/ic_minus.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_ic_location.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/ic_location.xml"
+    },
+    {
+        "merged": "com.example.sendbeta.app-debug-37:/color_bottom_nav_icon_colors.xml.flat",
+        "source": "com.example.sendbeta.app-main-39:/color/bottom_nav_icon_colors.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/layout_activity_splash.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/layout/activity_splash.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_frame_corner_tl.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/frame_corner_tl.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_frame_corner_br.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/frame_corner_br.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_ic_info.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/ic_info.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_map_placeholder.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/map_placeholder.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_ic_play.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/ic_play.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/mipmap-anydpi-v26/ic_launcher_round.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_map_controls_background.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/map_controls_background.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/layout_activity_main.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/layout/activity_main.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/layout_fragment_about.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/layout/fragment_about.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_button_dark.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/button_dark.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_ic_camera.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/ic_camera.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_route_icon_yellow.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/route_icon_yellow.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_ic_mountain.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/ic_mountain.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_badge_pose_tracking.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/badge_pose_tracking.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_camera_overlay_pill.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/camera_overlay_pill.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/color_chip_background_color.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/color/chip_background_color.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_ic_github.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/ic_github.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_ic_gallery.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/ic_gallery.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/menu_bottom_nav_menu.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/menu/bottom_nav_menu.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/layout_fragment_capture.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/layout/fragment_capture.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/mipmap-anydpi-v26/ic_launcher.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/layout_item_route.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/layout/item_route.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_ic_target.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/ic_target.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_ic_edit.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/ic_edit.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_route_icon_blue.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/route_icon_blue.xml"
+    },
+    {
+        "merged": "com.example.sendbeta.app-debug-37:/layout_activity_main.xml.flat",
+        "source": "com.example.sendbeta.app-main-39:/layout/activity_main.xml"
+    },
+    {
+        "merged": "com.example.sendbeta.app-debug-37:/drawable_bottom_nav_item_bg.xml.flat",
+        "source": "com.example.sendbeta.app-main-39:/drawable/bottom_nav_item_bg.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_route_icon_coral.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/route_icon_coral.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_grade_badge_lime.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/grade_badge_lime.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_grade_badge_yellow.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/grade_badge_yellow.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_ic_check_small.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/ic_check_small.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/layout_fragment_routes.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/layout/fragment_routes.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/layout_fragment_home.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/layout/fragment_home.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_camera_placeholder.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/camera_placeholder.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_frame_corner_bl.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/frame_corner_bl.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_ic_launcher_foreground.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_badge_sent.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/badge_sent.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_ic_step_back.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/ic_step_back.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_ic_home.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/ic_home.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/layout_fragment_analyzer.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/layout/fragment_analyzer.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_status_pill_background.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/status_pill_background.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/xml_backup_rules.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/xml/backup_rules.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_ic_dot_green.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/ic_dot_green.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_ic_close.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/ic_close.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_ic_plus.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/ic_plus.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_ic_share.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/ic_share.xml"
+    },
+    {
+        "merged": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-debug-37:/drawable_marker_dark.xml.flat",
+        "source": "/Users/arianacruz/.gradle/daemon/8.9/com.example.sendbeta.app-main-39:/drawable/marker_dark.xml"
+    }
+]

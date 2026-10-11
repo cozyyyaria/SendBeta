@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SendBeta</string>
+    
+    <!-- Splash Screen -->
+    <string name="splash_tagline">Climb smarter beta.</string>
+    <string name="splash_subtitle">Analyze every move. Send with intention.</string>
+    <string name="version">VERSION 1.0.0</string>
+    
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_routes">Routes</string>
+    <string name="nav_capture">Capture</string>
+    <string name="nav_gyms">Gyms</string>
+    <string name="nav_about">About</string>
+    
+    <!-- Home Screen -->
+    <string name="hello_greeting">Hello, Ariana</string>
+    <string name="home_subtitle">Ready for your next project?</string>
+    <string name="weekly_progress">Weekly progress</string>
+    <string name="hero_title">You\'re climbing stronger.</string>
+    <string name="hero_subtitle">Two sends this week. One move closer to your first V7.</string>
+    <string name="record_beta">Record new beta</string>
+    <string name="your_season">Your season</string>
+    <string name="climbing_stats">Climbing stats</string>
+    <string name="total_sends">Total sends</string>
+    <string name="active_projects">Active projects</string>
+    <string name="top_grade">Top grade</string>
+    <string name="recent_beta">Recent beta</string>
+    <string name="view_all_routes">View all routes</string>
+    
+    <!-- Routes Screen -->
+    <string name="route_library">Route library</string>
+    <string name="find_next_problem">Find your next problem</string>
+    <string name="routes_subtitle">%d routes saved across 3 Toronto gyms</string>
+    <string name="search_hint">Search routes or gyms…</string>
+    <string name="add_route">Add route</string>
+    
+    <!-- Route Detail -->
+    <string name="route_details">Route details</string>
+    <string name="personal_beta">Personal beta</string>
+    <string name="notes_cues">Notes &amp; cues</string>
+    <string name="attempt_history">Attempt history</string>
+    <string name="route_profile">Route profile</string>
+    <string name="log_attempt">Log an attempt</string>
+    
+    <!-- Capture Screen -->
+    <string name="new_attempt">New attempt</string>
+    <string name="capture_beta">Capture beta</string>
+    <string name="capture_hint">Frame the full wall and keep the climber in view</string>
+    <string name="camera_ready">Camera ready</string>
+    <string name="flip">Flip</string>
+    <string name="gallery">Gallery</string>
+    
+    <!-- Analyzer Screen -->
+    <string name="beta_analyzer">Beta analyzer</string>
+    <string name="save_analysis">Save analysis</string>
+    <string name="annotation_tools">Annotation tools</string>
+    <string name="mark_movement">Mark the movement</string>
+    <string name="annotation_hint">Select a hold type, then place it directly on the paused frame.</string>
+    <string name="start_hold">Start hold</string>
+    <string name="crux_hold">Crux hold</string>
+    <string name="top_hold">Top hold</string>
+    <string name="opening_position">Opening position</string>
+    <string name="key_movement">Key movement</string>
+    <string name="finish_hold">Finish hold</string>
+    <string name="movement_insight">Movement insight</string>
+    <string name="clear_annotations">Clear all annotations</string>
+    
+    <!-- Map Screen -->
+    <string name="explore_nearby">Explore nearby</string>
+    <string name="climbing_gyms">Climbing gyms</string>
+    <string name="map_subtitle">Find a wall and get moving</string>
+    <string name="selected_gym">Selected gym</string>
+    <string name="get_directions">Get directions</string>
+    <string name="all_nearby">All nearby</string>
+    
+    <!-- About Screen -->
+    <string name="about_app">About the app</string>
+    <string name="built_for_beta">Built for better beta</string>
+    <string name="about_subtitle">A focused toolkit for climbers who want to move with intention.</string>
+    <string name="climb_smarter">Climb smarter.\nSend stronger.</string>
+    <string name="about_description">SendBeta turns every attempt into something you can learn from—without getting between you and the wall.</string>
+    <string name="project_details">Project details</string>
+    <string name="course">COMP3074 · Mobile App Dev I</string>
+    <string name="team">Solo Developer</string>
+    <string name="role">Full-Stack Android</string>
+    <string name="developer">Ariana Cruz · 101346000</string>
+    <string name="view_github">View GitHub repository</string>
+</resources>
