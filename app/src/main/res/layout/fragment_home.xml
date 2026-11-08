@@ -34,10 +34,10 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="monospace"
                     android:letterSpacing="0.13"
-                    android:text="WEDNESDAY, SEPTEMBER 18"
-                    android:textAllCaps="true"
+                    android:text="Wednesday, September 18"
+                    android:textAllCaps="false"
                     android:textColor="#7A867F"
-                    android:textSize="9sp"
+                    android:textSize="11sp"
                     android:textStyle="bold" />
 
                 <TextView
@@ -45,7 +45,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
                     android:fontFamily="sans-serif-black"
-                    android:letterSpacing="-0.05"
+                    android:letterSpacing="-0.04"
                     android:text="@string/hello_greeting"
                     android:textColor="@color/ink"
                     android:textSize="28sp" />
@@ -54,23 +54,23 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="2dp"
-                    android:text="@string/home_subtitle"
+                    android:text="Ready for your next project?"
                     android:textColor="#738078"
-                    android:textSize="12sp" />
+                    android:textSize="13sp" />
             </LinearLayout>
 
             <!-- Profile Avatar Button -->
             <TextView
                 android:id="@+id/btn_avatar"
-                android:layout_width="42dp"
-                android:layout_height="42dp"
+                android:layout_width="44dp"
+                android:layout_height="44dp"
                 android:background="@drawable/avatar_background"
                 android:clickable="true"
                 android:focusable="true"
                 android:gravity="center"
                 android:text="AC"
                 android:textColor="@color/lime"
-                android:textSize="12sp"
+                android:textSize="13sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -95,7 +95,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/orbit_container"
+                    app:layout_constraintEnd_toStartOf="@id/hero_visual"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
@@ -107,43 +107,43 @@
                         android:drawableStart="@drawable/ic_dot_green"
                         android:drawablePadding="6dp"
                         android:fontFamily="monospace"
-                        android:paddingHorizontal="9dp"
+                        android:paddingHorizontal="10dp"
                         android:paddingVertical="5dp"
-                        android:text="@string/weekly_progress"
-                        android:textAllCaps="true"
+                        android:text="Weekly progress"
+                        android:textAllCaps="false"
                         android:textColor="@color/ink"
-                        android:textSize="9sp" />
+                        android:textSize="10sp" />
 
                     <!-- Headline -->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
+                        android:layout_marginTop="16dp"
                         android:fontFamily="sans-serif-black"
-                        android:letterSpacing="-0.05"
+                        android:letterSpacing="-0.04"
                         android:lineSpacingMultiplier="0.95"
                         android:text="@string/hero_title"
                         android:textColor="@color/ink"
-                        android:textSize="28sp" />
+                        android:textSize="26sp" />
 
                     <!-- Subtitle -->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:lineSpacingMultiplier="1.4"
-                        android:text="@string/hero_subtitle"
-                        android:textColor="#475636"
+                        android:layout_marginTop="8dp"
+                        android:lineSpacingMultiplier="1.3"
+                        android:text="Two sends this week. One move closer to your first V7."
+                        android:textColor="#3D4B30"
                         android:textSize="12sp" />
 
                     <!-- Record Beta Button -->
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btn_record_beta"
                         android:layout_width="wrap_content"
-                        android:layout_height="40dp"
-                        android:layout_marginTop="20dp"
+                        android:layout_height="42dp"
+                        android:layout_marginTop="18dp"
                         android:paddingHorizontal="16dp"
-                        android:text="@string/record_beta"
+                        android:text="Record new beta"
                         android:textAllCaps="false"
                         android:textColor="@color/white"
                         android:textSize="12sp"
@@ -156,27 +156,43 @@
                         app:iconTint="@color/white" />
                 </LinearLayout>
 
-                <!-- Right Side V7 Orbit Graphic -->
+                <!-- Right Side Hero Visual with V7 Orbit & 4 Floating Holds -->
                 <FrameLayout
-                    android:id="@+id/orbit_container"
-                    android:layout_width="90dp"
+                    android:id="@+id/hero_visual"
+                    android:layout_width="100dp"
                     android:layout_height="140dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
-                    <!-- Route line accent -->
+                    <!-- Route trajectory line -->
                     <View
                         android:layout_width="2dp"
-                        android:layout_height="120dp"
+                        android:layout_height="110dp"
                         android:layout_gravity="center"
-                        android:background="#3017251e"
-                        android:rotation="15" />
+                        android:background="#2E18201D"
+                        android:rotation="18" />
 
-                    <!-- Orbit Badge V7 -->
+                    <!-- Hold H1 (Top) -->
+                    <View
+                        android:layout_width="26dp"
+                        android:layout_height="15dp"
+                        android:layout_gravity="top|center_horizontal"
+                        android:layout_marginTop="4dp"
+                        android:background="@drawable/hold_h1" />
+
+                    <!-- Hold H2 (Left of V7) -->
+                    <View
+                        android:layout_width="16dp"
+                        android:layout_height="22dp"
+                        android:layout_gravity="center_vertical|start"
+                        android:layout_marginStart="2dp"
+                        android:background="@drawable/hold_h2" />
+
+                    <!-- Orbit Badge V7 in Center -->
                     <TextView
-                        android:layout_width="64dp"
-                        android:layout_height="64dp"
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
                         android:layout_gravity="center"
                         android:background="@drawable/button_dark"
                         android:fontFamily="monospace"
@@ -185,6 +201,23 @@
                         android:textColor="@color/lime"
                         android:textSize="20sp"
                         android:textStyle="bold" />
+
+                    <!-- Hold H3 (Bottom) -->
+                    <View
+                        android:layout_width="24dp"
+                        android:layout_height="16dp"
+                        android:layout_gravity="bottom|center_horizontal"
+                        android:layout_marginBottom="12dp"
+                        android:background="@drawable/hold_h3" />
+
+                    <!-- Hold H4 (Bottom Left small) -->
+                    <View
+                        android:layout_width="14dp"
+                        android:layout_height="12dp"
+                        android:layout_gravity="bottom|start"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginBottom="2dp"
+                        android:background="@drawable/hold_h4" />
                 </FrameLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
@@ -255,17 +288,16 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="24dp"
-                    android:orientation="horizontal"
-                    android:weightSum="3">
+                    android:layout_marginTop="22dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
 
                     <!-- Stat 1: Total Sends -->
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:paddingEnd="12dp">
+                        android:orientation="vertical">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -286,7 +318,7 @@
                             android:paddingVertical="3dp"
                             android:text="+3"
                             android:textColor="@color/green"
-                            android:textSize="8sp"
+                            android:textSize="9sp"
                             android:textStyle="bold" />
 
                         <TextView
@@ -295,7 +327,7 @@
                             android:layout_marginTop="8dp"
                             android:text="@string/total_sends"
                             android:textColor="@color/muted"
-                            android:textSize="10sp" />
+                            android:textSize="11sp" />
                     </LinearLayout>
 
                     <!-- Stat 2: Active Projects -->
@@ -303,8 +335,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:paddingHorizontal="12dp">
+                        android:orientation="vertical">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -325,7 +356,7 @@
                             android:paddingVertical="3dp"
                             android:text="2 close"
                             android:textColor="@color/green"
-                            android:textSize="8sp"
+                            android:textSize="9sp"
                             android:textStyle="bold" />
 
                         <TextView
@@ -334,16 +365,23 @@
                             android:layout_marginTop="8dp"
                             android:text="@string/active_projects"
                             android:textColor="@color/muted"
-                            android:textSize="10sp" />
+                            android:textSize="11sp" />
                     </LinearLayout>
+
+                    <!-- Vertical Divider -->
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="48dp"
+                        android:layout_marginHorizontal="10dp"
+                        android:background="@color/line" />
 
                     <!-- Stat 3: Top Grade -->
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
+                        android:layout_weight="1.2"
                         android:orientation="vertical"
-                        android:paddingStart="12dp">
+                        android:paddingStart="4dp">
 
                         <TextView
                             android:layout_width="wrap_content"
@@ -364,7 +402,7 @@
                             android:paddingVertical="3dp"
                             android:text="Personal best"
                             android:textColor="@color/green"
-                            android:textSize="8sp"
+                            android:textSize="9sp"
                             android:textStyle="bold" />
 
                         <TextView
@@ -373,11 +411,11 @@
                             android:layout_marginTop="8dp"
                             android:text="@string/top_grade"
                             android:textColor="@color/muted"
-                            android:textSize="10sp" />
+                            android:textSize="11sp" />
                     </LinearLayout>
                 </LinearLayout>
 
-                <!-- Grade Track Progress Bar -->
+                <!-- Grade Track Progress Bar (72% progress) -->
                 <FrameLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -389,9 +427,23 @@
                         android:background="#EEF0EC" />
 
                     <View
-                        android:layout_width="220dp"
+                        android:layout_width="0dp"
                         android:layout_height="4dp"
-                        android:background="@color/lime" />
+                        android:layout_gravity="start"
+                        android:background="@color/lime"
+                        app:layout_constraintWidth_percent="0.72" />
+                    
+                    <!-- 72% fill track via custom width proportion -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="4dp"
+                        android:weightSum="100">
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="match_parent"
+                            android:layout_weight="72"
+                            android:background="@color/lime" />
+                    </LinearLayout>
                 </FrameLayout>
 
                 <!-- Grade Track Labels -->
@@ -408,7 +460,7 @@
                         android:fontFamily="monospace"
                         android:text="V0"
                         android:textColor="#929A95"
-                        android:textSize="9sp" />
+                        android:textSize="10sp" />
 
                     <TextView
                         android:layout_width="0dp"
@@ -417,7 +469,7 @@
                         android:fontFamily="monospace"
                         android:text="V3"
                         android:textColor="#929A95"
-                        android:textSize="9sp" />
+                        android:textSize="10sp" />
 
                     <TextView
                         android:layout_width="0dp"
@@ -426,7 +478,7 @@
                         android:fontFamily="monospace"
                         android:text="V6"
                         android:textColor="#929A95"
-                        android:textSize="9sp" />
+                        android:textSize="10sp" />
 
                     <TextView
                         android:layout_width="wrap_content"
@@ -434,7 +486,7 @@
                         android:fontFamily="monospace"
                         android:text="V9"
                         android:textColor="#929A95"
-                        android:textSize="9sp" />
+                        android:textSize="10sp" />
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -485,7 +537,7 @@
                 android:focusable="true"
                 android:text="@string/view_all_routes"
                 android:textColor="#526158"
-                android:textSize="11sp"
+                android:textSize="12sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -507,14 +559,15 @@
                 android:orientation="horizontal">
 
                 <FrameLayout
-                    android:layout_width="130dp"
-                    android:layout_height="105dp">
+                    android:layout_width="125dp"
+                    android:layout_height="100dp">
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@color/ink" />
+                        android:background="@drawable/bg_attempt_overhang" />
 
+                    <!-- Sent Badge with check icon -->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="24dp"
@@ -530,8 +583,10 @@
                         android:textAllCaps="true"
                         android:textColor="#54700C"
                         android:textSize="9sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        app:drawableTint="#54700C" />
 
+                    <!-- Duration -->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -540,9 +595,10 @@
                         android:fontFamily="monospace"
                         android:text="22s"
                         android:textColor="@color/white"
-                        android:textSize="9sp"
+                        android:textSize="10sp"
                         android:textStyle="bold" />
 
+                    <!-- Play Button -->
                     <ImageView
                         android:layout_width="32dp"
                         android:layout_height="32dp"
@@ -550,7 +606,8 @@
                         android:layout_margin="8dp"
                         android:background="@drawable/play_button_background"
                         android:padding="8dp"
-                        android:src="@drawable/ic_play" />
+                        android:src="@drawable/ic_play"
+                        app:tint="@color/white" />
                 </FrameLayout>
 
                 <LinearLayout
@@ -566,7 +623,7 @@
                         android:layout_height="wrap_content"
                         android:text="The Overhang"
                         android:textColor="@color/ink"
-                        android:textSize="14sp"
+                        android:textSize="15sp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -575,12 +632,12 @@
                         android:layout_marginTop="3dp"
                         android:text="Basecamp"
                         android:textColor="#89918C"
-                        android:textSize="11sp" />
+                        android:textSize="12sp" />
                 </LinearLayout>
 
                 <TextView
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="14dp"
                     android:background="@drawable/grade_badge_lime"
@@ -588,7 +645,7 @@
                     android:gravity="center"
                     android:text="V5"
                     android:textColor="@color/ink"
-                    android:textSize="11sp"
+                    android:textSize="12sp"
                     android:textStyle="bold" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -611,20 +668,23 @@
                 android:orientation="horizontal">
 
                 <FrameLayout
-                    android:layout_width="130dp"
-                    android:layout_height="105dp">
+                    android:layout_width="125dp"
+                    android:layout_height="100dp">
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@color/ink" />
+                        android:background="@drawable/bg_attempt_cave" />
 
+                    <!-- Fall Badge with close icon -->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="24dp"
                         android:layout_gravity="top|start"
                         android:layout_margin="8dp"
-                        android:background="@drawable/button_dark"
+                        android:background="@drawable/badge_fall"
+                        android:drawableStart="@drawable/ic_close"
+                        android:drawablePadding="4dp"
                         android:fontFamily="monospace"
                         android:gravity="center"
                         android:paddingHorizontal="8dp"
@@ -632,8 +692,10 @@
                         android:textAllCaps="true"
                         android:textColor="#C04E49"
                         android:textSize="9sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        app:drawableTint="#C04E49" />
 
+                    <!-- Duration -->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -642,9 +704,10 @@
                         android:fontFamily="monospace"
                         android:text="18s"
                         android:textColor="@color/white"
-                        android:textSize="9sp"
+                        android:textSize="10sp"
                         android:textStyle="bold" />
 
+                    <!-- Play Button -->
                     <ImageView
                         android:layout_width="32dp"
                         android:layout_height="32dp"
@@ -652,7 +715,8 @@
                         android:layout_margin="8dp"
                         android:background="@drawable/play_button_background"
                         android:padding="8dp"
-                        android:src="@drawable/ic_play" />
+                        android:src="@drawable/ic_play"
+                        app:tint="@color/white" />
                 </FrameLayout>
 
                 <LinearLayout
@@ -668,7 +732,7 @@
                         android:layout_height="wrap_content"
                         android:text="Cave Roof"
                         android:textColor="@color/ink"
-                        android:textSize="14sp"
+                        android:textSize="15sp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -677,12 +741,12 @@
                         android:layout_marginTop="3dp"
                         android:text="Rock Oasis"
                         android:textColor="#89918C"
-                        android:textSize="11sp" />
+                        android:textSize="12sp" />
                 </LinearLayout>
 
                 <TextView
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="14dp"
                     android:background="@drawable/grade_badge_coral"
@@ -690,7 +754,7 @@
                     android:gravity="center"
                     android:text="V7"
                     android:textColor="@color/ink"
-                    android:textSize="11sp"
+                    android:textSize="12sp"
                     android:textStyle="bold" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -713,14 +777,15 @@
                 android:orientation="horizontal">
 
                 <FrameLayout
-                    android:layout_width="130dp"
-                    android:layout_height="105dp">
+                    android:layout_width="125dp"
+                    android:layout_height="100dp">
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@color/ink" />
+                        android:background="@drawable/bg_attempt_slab" />
 
+                    <!-- Sent Badge -->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="24dp"
@@ -736,8 +801,10 @@
                         android:textAllCaps="true"
                         android:textColor="#54700C"
                         android:textSize="9sp"
-                        android:textStyle="bold" />
+                        android:textStyle="bold"
+                        app:drawableTint="#54700C" />
 
+                    <!-- Duration -->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -746,9 +813,10 @@
                         android:fontFamily="monospace"
                         android:text="31s"
                         android:textColor="@color/white"
-                        android:textSize="9sp"
+                        android:textSize="10sp"
                         android:textStyle="bold" />
 
+                    <!-- Play Button -->
                     <ImageView
                         android:layout_width="32dp"
                         android:layout_height="32dp"
@@ -756,7 +824,8 @@
                         android:layout_margin="8dp"
                         android:background="@drawable/play_button_background"
                         android:padding="8dp"
-                        android:src="@drawable/ic_play" />
+                        android:src="@drawable/ic_play"
+                        app:tint="@color/white" />
                 </FrameLayout>
 
                 <LinearLayout
@@ -772,7 +841,7 @@
                         android:layout_height="wrap_content"
                         android:text="Slab Balance"
                         android:textColor="@color/ink"
-                        android:textSize="14sp"
+                        android:textSize="15sp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -781,23 +850,22 @@
                         android:layout_marginTop="3dp"
                         android:text="Boulderz"
                         android:textColor="#89918C"
-                        android:textSize="11sp" />
+                        android:textSize="12sp" />
                 </LinearLayout>
 
                 <TextView
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
+                    android:layout_width="38dp"
+                    android:layout_height="38dp"
                     android:layout_gravity="center_vertical"
                     android:layout_marginEnd="14dp"
-                    android:background="@drawable/grade_badge_violet"
+                    android:background="@drawable/grade_badge_yellow"
                     android:fontFamily="monospace"
                     android:gravity="center"
                     android:text="V3"
                     android:textColor="@color/ink"
-                    android:textSize="11sp"
+                    android:textSize="12sp"
                     android:textStyle="bold" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
-
     </LinearLayout>
 </ScrollView>

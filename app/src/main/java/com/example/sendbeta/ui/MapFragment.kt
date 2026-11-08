@@ -14,6 +14,8 @@ import com.example.sendbeta.R
 
 class MapFragment : Fragment() {
 
+    private var currentGymAddress: String = "388 Carlaw Ave, Toronto, ON"
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -24,40 +26,39 @@ class MapFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        // Set up directions button
+        
+        // Directions button
         view.findViewById<Button>(R.id.btn_directions)?.setOnClickListener {
-            val address = "388 Carlaw Ave, Toronto, ON"
-            val mapUri = Uri.parse("geo:0,0?q=${Uri.encode(address)}")
-            val mapIntent = Intent(Intent.ACTION_VIEW, mapUri)
+            val uri = Uri.parse("geo:0,0?q=${Uri.encode(currentGymAddress)}")
+            val mapIntent = Intent(Intent.ACTION_VIEW, uri)
             try {
                 startActivity(mapIntent)
-            } catch (e: Exception) {
-                // Fallback to web browser maps URL
+            } catch (_: Exception) {
                 try {
-                    val webUri = Uri.parse("https://www.google.com/maps/search/?api=1&query=${Uri.encode(address)}")
+                    val webUri = Uri.parse("https://www.google.com/maps/search/?api=1&query=${Uri.encode(currentGymAddress)}")
                     startActivity(Intent(Intent.ACTION_VIEW, webUri))
                 } catch (ex: Exception) {
                     Toast.makeText(context, "Could not open directions", Toast.LENGTH_SHORT).show()
                 }
             }
         }
-
-        // Set up gym markers click handlers
+        
+        // Gym marker click handlers
         view.findViewById<View>(R.id.gym_marker_1)?.setOnClickListener {
-            selectGym("The Rock Oasis", "388 Carlaw Ave, Toronto, ON", "2.4 km", "Open")
+            selectGym("The Rock Oasis", "388 Carlaw Ave, Toronto, ON", "2.4 km", "Open until 11 PM")
         }
-
+        
         view.findViewById<View>(R.id.gym_marker_2)?.setOnClickListener {
-            selectGym("Basecamp Climbing", "123 Queen St W, Toronto, ON", "3.1 km", "Open")
+            selectGym("Basecamp", "677 Bloor St W, Toronto, ON", "4.8 km", "Open until 11 PM")
         }
-
+        
         view.findViewById<View>(R.id.gym_marker_3)?.setOnClickListener {
-            selectGym("Joe Rockhead's", "29 Fraser Ave, Toronto, ON", "4.2 km", "Open")
+            selectGym("Joe Rockhead's", "29 Fraser Ave, Toronto, ON", "6.1 km", "Open until 11 PM")
         }
     }
-
+    
     private fun selectGym(name: String, address: String, distance: String, hours: String) {
+        currentGymAddress = address
         view?.let { v ->
             v.findViewById<TextView>(R.id.gym_name)?.text = name
             v.findViewById<TextView>(R.id.gym_address)?.text = address

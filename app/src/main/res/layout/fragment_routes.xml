@@ -15,7 +15,7 @@
         android:orientation="horizontal"
         android:paddingHorizontal="18dp"
         android:paddingTop="28dp"
-        android:paddingBottom="18dp">
+        android:paddingBottom="12dp">
 
         <LinearLayout
             android:layout_width="0dp"
@@ -28,39 +28,39 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="monospace"
                 android:letterSpacing="0.13"
-                android:text="ROUTE LIBRARY"
-                android:textAllCaps="true"
-                android:textColor="#7A867F"
-                android:textSize="9sp"
+                android:text="Route library"
+                android:textAllCaps="false"
+                android:textColor="@color/muted"
+                android:textSize="11sp"
                 android:textStyle="bold" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
+                android:layout_marginTop="3dp"
                 android:fontFamily="sans-serif-black"
-                android:letterSpacing="-0.05"
-                android:text="@string/find_next_problem"
+                android:letterSpacing="-0.04"
+                android:text="Find your next problem"
                 android:textColor="@color/ink"
-                android:textSize="28sp" />
+                android:textSize="26sp" />
 
             <TextView
                 android:id="@+id/routes_subtitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
+                android:layout_marginTop="3dp"
                 android:text="4 routes saved across 3 Toronto gyms"
-                android:textColor="#738078"
+                android:textColor="@color/muted"
                 android:textSize="12sp" />
         </LinearLayout>
 
-        <!-- Add Route Button -->
+        <!-- Add Route button -->
         <ImageButton
             android:id="@+id/btn_add_route"
             android:layout_width="44dp"
             android:layout_height="44dp"
             android:background="@drawable/button_outlined"
-            android:contentDescription="@string/add_route"
+            android:contentDescription="Add route"
             android:src="@drawable/ic_plus"
             app:tint="@color/ink" />
     </LinearLayout>
@@ -70,7 +70,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="18dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="14dp"
         app:cardBackgroundColor="@color/white"
         app:cardCornerRadius="14dp"
         app:cardElevation="0dp"
@@ -79,7 +79,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="48dp"
+            android:layout_height="46dp"
             android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingHorizontal="16dp">
@@ -88,19 +88,32 @@
                 android:layout_width="20dp"
                 android:layout_height="20dp"
                 android:src="@drawable/ic_search"
-                app:tint="#7B867F" />
+                app:tint="@color/muted" />
 
             <EditText
                 android:id="@+id/search_input"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_marginStart="12dp"
+                android:layout_weight="1"
                 android:background="@android:color/transparent"
-                android:hint="@string/search_hint"
+                android:hint="Search routes or gyms..."
                 android:inputType="text"
                 android:textColor="@color/ink"
-                android:textColorHint="#7B867F"
-                android:textSize="13sp" />
+                android:textColorHint="@color/muted"
+                android:textSize="14sp" />
+
+            <!-- Keyboard shortcut indicator -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/stat_badge"
+                android:fontFamily="monospace"
+                android:paddingHorizontal="6dp"
+                android:paddingVertical="3dp"
+                android:text="⌘ K"
+                android:textColor="@color/muted"
+                android:textSize="9sp" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
@@ -108,7 +121,7 @@
     <HorizontalScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="12dp"
         android:clipToPadding="false"
         android:paddingHorizontal="18dp"
         android:scrollbars="none">
@@ -157,42 +170,83 @@
         </com.google.android.material.chip.ChipGroup>
     </HorizontalScrollView>
 
-    <!-- Unified Routes Card Container -->
+    <!-- List Label / Table Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginBottom="8dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:fontFamily="monospace"
+            android:letterSpacing="0.1"
+            android:text="ROUTE"
+            android:textColor="#859189"
+            android:textSize="10sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="32dp"
+            android:fontFamily="monospace"
+            android:letterSpacing="0.1"
+            android:text="GRADE"
+            android:textColor="#859189"
+            android:textSize="10sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <!-- Routes List -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
         android:paddingHorizontal="18dp">
 
-        <com.google.android.material.card.MaterialCardView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="100dp"
-            app:cardBackgroundColor="@color/white"
-            app:cardCornerRadius="18dp"
-            app:cardElevation="0dp"
-            app:strokeColor="@color/line"
-            app:strokeWidth="1dp">
+            android:orientation="vertical"
+            android:paddingBottom="100dp">
 
-            <LinearLayout
+            <!-- Route Item 1: The Pink Arête (Coral) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/route_card_1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:layout_marginBottom="12dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/line"
+                app:strokeWidth="1dp">
 
-                <!-- Route Item 1: The Pink Arête -->
                 <LinearLayout
-                    android:id="@+id/route_card_1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:padding="16dp">
 
-                    <View
-                        android:layout_width="42dp"
-                        android:layout_height="42dp"
-                        android:background="@drawable/route_icon_coral" />
+                    <FrameLayout
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:background="@drawable/swatch_coral">
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_route"
+                            app:tint="@color/coral" />
+                    </FrameLayout>
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -206,7 +260,7 @@
                             android:layout_height="wrap_content"
                             android:text="The Pink Arête"
                             android:textColor="@color/ink"
-                            android:textSize="14sp"
+                            android:textSize="15sp"
                             android:textStyle="bold" />
 
                         <LinearLayout
@@ -217,24 +271,63 @@
                             android:orientation="horizontal">
 
                             <ImageView
-                                android:layout_width="12dp"
-                                android:layout_height="12dp"
+                                android:layout_width="13dp"
+                                android:layout_height="13dp"
                                 android:src="@drawable/ic_location"
-                                app:tint="#89928C" />
+                                app:tint="@color/muted" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="4dp"
                                 android:text="Rock Oasis · Toronto"
-                                android:textColor="#89928C"
+                                android:textColor="@color/muted"
                                 android:textSize="11sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="6dp"
+                                android:background="@drawable/stat_badge"
+                                android:paddingHorizontal="7dp"
+                                android:paddingVertical="2dp"
+                                android:text="Arête"
+                                android:textColor="@color/ink"
+                                android:textSize="10sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="8dp"
+                                android:background="@drawable/stat_badge"
+                                android:paddingHorizontal="7dp"
+                                android:paddingVertical="2dp"
+                                android:text="Balance"
+                                android:textColor="@color/ink"
+                                android:textSize="10sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="★★★★☆ 4.0"
+                                android:textColor="#E6A21A"
+                                android:textSize="10sp"
+                                android:textStyle="bold" />
                         </LinearLayout>
                     </LinearLayout>
 
                     <TextView
                         android:layout_width="38dp"
                         android:layout_height="38dp"
+                        android:layout_marginStart="8dp"
                         android:background="@drawable/grade_badge_coral"
                         android:fontFamily="monospace"
                         android:gravity="center"
@@ -246,32 +339,45 @@
                     <ImageView
                         android:layout_width="20dp"
                         android:layout_height="20dp"
-                        android:layout_marginStart="12dp"
+                        android:layout_marginStart="10dp"
                         android:src="@drawable/ic_chevron_right"
-                        app:tint="#89928C" />
+                        app:tint="@color/muted" />
                 </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-                <!-- Divider 1 -->
-                <View
-                    android:id="@+id/divider_1"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="#EDF0EC" />
+            <!-- Route Item 2: The Dyno Problem (Lime) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/route_card_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/line"
+                app:strokeWidth="1dp">
 
-                <!-- Route Item 2: The Dyno Problem -->
                 <LinearLayout
-                    android:id="@+id/route_card_2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:padding="16dp">
 
-                    <View
-                        android:layout_width="42dp"
-                        android:layout_height="42dp"
-                        android:background="@drawable/route_icon_yellow" />
+                    <FrameLayout
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:background="@drawable/swatch_lime">
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_route"
+                            app:tint="@color/lime_dark" />
+                    </FrameLayout>
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -285,7 +391,7 @@
                             android:layout_height="wrap_content"
                             android:text="The Dyno Problem"
                             android:textColor="@color/ink"
-                            android:textSize="14sp"
+                            android:textSize="15sp"
                             android:textStyle="bold" />
 
                         <LinearLayout
@@ -296,25 +402,64 @@
                             android:orientation="horizontal">
 
                             <ImageView
-                                android:layout_width="12dp"
-                                android:layout_height="12dp"
+                                android:layout_width="13dp"
+                                android:layout_height="13dp"
                                 android:src="@drawable/ic_location"
-                                app:tint="#89928C" />
+                                app:tint="@color/muted" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="4dp"
                                 android:text="Basecamp · Queen West"
-                                android:textColor="#89928C"
+                                android:textColor="@color/muted"
                                 android:textSize="11sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="6dp"
+                                android:background="@drawable/stat_badge"
+                                android:paddingHorizontal="7dp"
+                                android:paddingVertical="2dp"
+                                android:text="Dyno"
+                                android:textColor="@color/ink"
+                                android:textSize="10sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="8dp"
+                                android:background="@drawable/stat_badge"
+                                android:paddingHorizontal="7dp"
+                                android:paddingVertical="2dp"
+                                android:text="Overhang"
+                                android:textColor="@color/ink"
+                                android:textSize="10sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="★★★★☆ 4.0"
+                                android:textColor="#E6A21A"
+                                android:textSize="10sp"
+                                android:textStyle="bold" />
                         </LinearLayout>
                     </LinearLayout>
 
                     <TextView
                         android:layout_width="38dp"
                         android:layout_height="38dp"
-                        android:background="@drawable/grade_badge_yellow"
+                        android:layout_marginStart="8dp"
+                        android:background="@drawable/grade_badge_lime"
                         android:fontFamily="monospace"
                         android:gravity="center"
                         android:text="V4"
@@ -325,32 +470,45 @@
                     <ImageView
                         android:layout_width="20dp"
                         android:layout_height="20dp"
-                        android:layout_marginStart="12dp"
+                        android:layout_marginStart="10dp"
                         android:src="@drawable/ic_chevron_right"
-                        app:tint="#89928C" />
+                        app:tint="@color/muted" />
                 </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-                <!-- Divider 2 -->
-                <View
-                    android:id="@+id/divider_2"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="#EDF0EC" />
+            <!-- Route Item 3: Sloper Traverse (Blue) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/route_card_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/line"
+                app:strokeWidth="1dp">
 
-                <!-- Route Item 3: Sloper Traverse -->
                 <LinearLayout
-                    android:id="@+id/route_card_3"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:padding="16dp">
 
-                    <View
-                        android:layout_width="42dp"
-                        android:layout_height="42dp"
-                        android:background="@drawable/route_icon_blue" />
+                    <FrameLayout
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:background="@drawable/swatch_blue">
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_route"
+                            app:tint="@color/blue" />
+                    </FrameLayout>
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -364,7 +522,7 @@
                             android:layout_height="wrap_content"
                             android:text="Sloper Traverse"
                             android:textColor="@color/ink"
-                            android:textSize="14sp"
+                            android:textSize="15sp"
                             android:textStyle="bold" />
 
                         <LinearLayout
@@ -375,24 +533,63 @@
                             android:orientation="horizontal">
 
                             <ImageView
-                                android:layout_width="12dp"
-                                android:layout_height="12dp"
+                                android:layout_width="13dp"
+                                android:layout_height="13dp"
                                 android:src="@drawable/ic_location"
-                                app:tint="#89928C" />
+                                app:tint="@color/muted" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="4dp"
                                 android:text="Joe Rockhead's · Liberty"
-                                android:textColor="#89928C"
+                                android:textColor="@color/muted"
                                 android:textSize="11sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="6dp"
+                                android:background="@drawable/stat_badge"
+                                android:paddingHorizontal="7dp"
+                                android:paddingVertical="2dp"
+                                android:text="Slopers"
+                                android:textColor="@color/ink"
+                                android:textSize="10sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="8dp"
+                                android:background="@drawable/stat_badge"
+                                android:paddingHorizontal="7dp"
+                                android:paddingVertical="2dp"
+                                android:text="Roof"
+                                android:textColor="@color/ink"
+                                android:textSize="10sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="★★★☆☆ 3.0"
+                                android:textColor="#E6A21A"
+                                android:textSize="10sp"
+                                android:textStyle="bold" />
                         </LinearLayout>
                     </LinearLayout>
 
                     <TextView
                         android:layout_width="38dp"
                         android:layout_height="38dp"
+                        android:layout_marginStart="8dp"
                         android:background="@drawable/grade_badge_blue"
                         android:fontFamily="monospace"
                         android:gravity="center"
@@ -404,32 +601,45 @@
                     <ImageView
                         android:layout_width="20dp"
                         android:layout_height="20dp"
-                        android:layout_marginStart="12dp"
+                        android:layout_marginStart="10dp"
                         android:src="@drawable/ic_chevron_right"
-                        app:tint="#89928C" />
+                        app:tint="@color/muted" />
                 </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
 
-                <!-- Divider 3 -->
-                <View
-                    android:id="@+id/divider_3"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="#EDF0EC" />
+            <!-- Route Item 4: Quiet Feet (Violet) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/route_card_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="12dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                app:cardBackgroundColor="@color/white"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/line"
+                app:strokeWidth="1dp">
 
-                <!-- Route Item 4: Quiet Feet -->
                 <LinearLayout
-                    android:id="@+id/route_card_4"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="?attr/selectableItemBackground"
                     android:gravity="center_vertical"
                     android:orientation="horizontal"
                     android:padding="16dp">
 
-                    <View
-                        android:layout_width="42dp"
-                        android:layout_height="42dp"
-                        android:background="@drawable/route_icon_violet" />
+                    <FrameLayout
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:background="@drawable/swatch_violet">
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_gravity="center"
+                            android:src="@drawable/ic_route"
+                            app:tint="@color/violet" />
+                    </FrameLayout>
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -443,7 +653,7 @@
                             android:layout_height="wrap_content"
                             android:text="Quiet Feet"
                             android:textColor="@color/ink"
-                            android:textSize="14sp"
+                            android:textSize="15sp"
                             android:textStyle="bold" />
 
                         <LinearLayout
@@ -454,24 +664,63 @@
                             android:orientation="horizontal">
 
                             <ImageView
-                                android:layout_width="12dp"
-                                android:layout_height="12dp"
+                                android:layout_width="13dp"
+                                android:layout_height="13dp"
                                 android:src="@drawable/ic_location"
-                                app:tint="#89928C" />
+                                app:tint="@color/muted" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="4dp"
                                 android:text="Boulderz · Etobicoke"
-                                android:textColor="#89928C"
+                                android:textColor="@color/muted"
                                 android:textSize="11sp" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="6dp"
+                            android:gravity="center_vertical"
+                            android:orientation="horizontal">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="6dp"
+                                android:background="@drawable/stat_badge"
+                                android:paddingHorizontal="7dp"
+                                android:paddingVertical="2dp"
+                                android:text="Slab"
+                                android:textColor="@color/ink"
+                                android:textSize="10sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginEnd="8dp"
+                                android:background="@drawable/stat_badge"
+                                android:paddingHorizontal="7dp"
+                                android:paddingVertical="2dp"
+                                android:text="Crimps"
+                                android:textColor="@color/ink"
+                                android:textSize="10sp" />
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="★★★★★ 5.0"
+                                android:textColor="#E6A21A"
+                                android:textSize="10sp"
+                                android:textStyle="bold" />
                         </LinearLayout>
                     </LinearLayout>
 
                     <TextView
                         android:layout_width="38dp"
                         android:layout_height="38dp"
+                        android:layout_marginStart="8dp"
                         android:background="@drawable/grade_badge_violet"
                         android:fontFamily="monospace"
                         android:gravity="center"
@@ -483,11 +732,45 @@
                     <ImageView
                         android:layout_width="20dp"
                         android:layout_height="20dp"
-                        android:layout_marginStart="12dp"
+                        android:layout_marginStart="10dp"
                         android:src="@drawable/ic_chevron_right"
-                        app:tint="#89928C" />
+                        app:tint="@color/muted" />
                 </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Empty State -->
+            <LinearLayout
+                android:id="@+id/empty_state"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="32dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:src="@drawable/ic_search"
+                    app:tint="@color/muted" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:text="No routes found"
+                    android:textColor="@color/ink"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="Try a different search or filter."
+                    android:textColor="@color/muted"
+                    android:textSize="12sp" />
             </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+        </LinearLayout>
     </ScrollView>
 </LinearLayout>

@@ -45,6 +45,17 @@ class MainActivity : AppCompatActivity() {
             loadFragment(fragment)
             true
         }
+
+        // Sync bottom navigation selection with current fragment when popping back stack
+        supportFragmentManager.addOnBackStackChangedListener {
+            val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
+            when (currentFragment) {
+                is HomeFragment -> bottomNav.menu.findItem(R.id.nav_home)?.isChecked = true
+                is RoutesFragment -> bottomNav.menu.findItem(R.id.nav_routes)?.isChecked = true
+                is CaptureFragment -> bottomNav.menu.findItem(R.id.nav_capture)?.isChecked = true
+                is MapFragment -> bottomNav.menu.findItem(R.id.nav_gyms)?.isChecked = true
+            }
+        }
     }
     
     private fun loadFragment(fragment: Fragment) {

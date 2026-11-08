@@ -30,12 +30,12 @@ class RoutesFragment : Fragment() {
         val card2 = view.findViewById<View>(R.id.route_card_2)
         val card3 = view.findViewById<View>(R.id.route_card_3)
         val card4 = view.findViewById<View>(R.id.route_card_4)
+        val emptyState = view.findViewById<View>(R.id.empty_state)
+        val subtitle = view.findViewById<TextView>(R.id.routes_subtitle)
+        val searchInput = view.findViewById<EditText>(R.id.search_input)
+        val chipGroup = view.findViewById<ChipGroup>(R.id.filter_chips)
 
-        val div1 = view.findViewById<View>(R.id.divider_1)
-        val div2 = view.findViewById<View>(R.id.divider_2)
-        val div3 = view.findViewById<View>(R.id.divider_3)
-
-        // Route clicks
+        // Route click listeners
         card1?.setOnClickListener {
             openRouteDetail("The Pink Arête", "Rock Oasis · Toronto", "V5")
         }
@@ -52,7 +52,7 @@ class RoutesFragment : Fragment() {
             openRouteDetail("Quiet Feet", "Boulderz · Etobicoke", "V3")
         }
 
-        // Add route button
+        // Add Route button -> CaptureFragment
         view.findViewById<ImageButton>(R.id.btn_add_route)?.setOnClickListener {
             parentFragmentManager.beginTransaction()
                 .replace(R.id.fragment_container, CaptureFragment())
@@ -60,78 +60,54 @@ class RoutesFragment : Fragment() {
                 .commit()
         }
 
-        // Search filtering
-        view.findViewById<EditText>(R.id.search_input)?.addTextChangedListener(object : TextWatcher {
+        // Filter and Search logic matching React prototype
+        fun updateVisibility() {
+            val query = searchInput?.text?.toString()?.trim()?.lowercase() ?: ""
+            val checkedChipId = chipGroup?.checkedChipId ?: R.id.chip_all
+
+            // Tag/filter checks
+            val matchChip1 = checkedChipId == R.id.chip_all
+            val matchChip2 = checkedChipId == R.id.chip_all || checkedChipId == R.id.chip_overhang || checkedChipId == R.id.chip_dynamic
+            val matchChip3 = checkedChipId == R.id.chip_all
+            val matchChip4 = checkedChipId == R.id.chip_all || checkedChipId == R.id.chip_slab || checkedChipId == R.id.chip_crimps
+
+            // Query checks
+            val matchQuery1 = query.isEmpty() || "the pink arête rock oasis toronto arête balance".contains(query)
+            val matchQuery2 = query.isEmpty() || "the dyno problem basecamp queen west dyno overhang".contains(query)
+            val matchQuery3 = query.isEmpty() || "sloper traverse joe rockhead liberty slopers roof".contains(query)
+            val matchQuery4 = query.isEmpty() || "quiet feet boulderz etobicoke slab crimps".contains(query)
+
+            val show1 = matchChip1 && matchQuery1
+            val show2 = matchChip2 && matchQuery2
+            val show3 = matchChip3 && matchQuery3
+            val show4 = matchChip4 && matchQuery4
+
+            card1?.visibility = if (show1) View.VISIBLE else View.GONE
+            card2?.visibility = if (show2) View.VISIBLE else View.GONE
+            card3?.visibility = if (show3) View.VISIBLE else View.GONE
+            card4?.visibility = if (show4) View.VISIBLE else View.GONE
+
+            val count = (if (show1) 1 else 0) + (if (show2) 1 else 0) + (if (show3) 1 else 0) + (if (show4) 1 else 0)
+            emptyState?.visibility = if (count == 0) View.VISIBLE else View.GONE
+
+            subtitle?.text = if (query.isEmpty() && checkedChipId == R.id.chip_all) {
+                "4 routes saved across 3 Toronto gyms"
+            } else {
+                "$count routes found"
+            }
+        }
+
+        searchInput?.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                val query = s?.toString()?.trim()?.lowercase() ?: ""
-                card1?.visibility = if (query.isEmpty() || "pink arête rock oasis".contains(query)) View.VISIBLE else View.GONE
-                card2?.visibility = if (query.isEmpty() || "dyno problem basecamp".contains(query)) View.VISIBLE else View.GONE
-                card3?.visibility = if (query.isEmpty() || "sloper traverse joe rockhead".contains(query)) View.VISIBLE else View.GONE
-                card4?.visibility = if (query.isEmpty() || "quiet feet boulderz".contains(query)) View.VISIBLE else View.GONE
-
-                div1?.visibility = if (card1?.visibility == View.VISIBLE && (card2?.visibility == View.VISIBLE || card3?.visibility == View.VISIBLE || card4?.visibility == View.VISIBLE)) View.VISIBLE else View.GONE
-                div2?.visibility = if (card2?.visibility == View.VISIBLE && (card3?.visibility == View.VISIBLE || card4?.visibility == View.VISIBLE)) View.VISIBLE else View.GONE
-                div3?.visibility = if (card3?.visibility == View.VISIBLE && card4?.visibility == View.VISIBLE) View.VISIBLE else View.GONE
+                updateVisibility()
             }
             override fun afterTextChanged(s: Editable?) {}
         })
 
-        // Filter chips
-        val chipGroup = view.findViewById<ChipGroup>(R.id.filter_chips)
-        chipGroup?.setOnCheckedStateChangeListener { _, checkedIds ->
-            val firstId = checkedIds.firstOrNull() ?: R.id.chip_all
-            when (firstId) {
-                R.id.chip_overhang -> {
-                    card1?.visibility = View.GONE
-                    card2?.visibility = View.VISIBLE
-                    card3?.visibility = View.GONE
-                    card4?.visibility = View.GONE
-                    div1?.visibility = View.GONE
-                    div2?.visibility = View.GONE
-                    div3?.visibility = View.GONE
-                }
-                R.id.chip_crimps -> {
-                    card1?.visibility = View.GONE
-                    card2?.visibility = View.GONE
-                    card3?.visibility = View.GONE
-                    card4?.visibility = View.VISIBLE
-                    div1?.visibility = View.GONE
-                    div2?.visibility = View.GONE
-                    div3?.visibility = View.GONE
-                }
-                R.id.chip_slab -> {
-                    card1?.visibility = View.GONE
-                    card2?.visibility = View.GONE
-                    card3?.visibility = View.GONE
-                    card4?.visibility = View.VISIBLE
-                    div1?.visibility = View.GONE
-                    div2?.visibility = View.GONE
-                    div3?.visibility = View.GONE
-                }
-                R.id.chip_dynamic -> {
-                    card1?.visibility = View.GONE
-                    card2?.visibility = View.VISIBLE
-                    card3?.visibility = View.GONE
-                    card4?.visibility = View.GONE
-                    div1?.visibility = View.GONE
-                    div2?.visibility = View.GONE
-                    div3?.visibility = View.GONE
-                }
-                else -> { // All
-                    card1?.visibility = View.VISIBLE
-                    card2?.visibility = View.VISIBLE
-                    card3?.visibility = View.VISIBLE
-                    card4?.visibility = View.VISIBLE
-                    div1?.visibility = View.VISIBLE
-                    div2?.visibility = View.VISIBLE
-                    div3?.visibility = View.VISIBLE
-                }
-            }
+        chipGroup?.setOnCheckedStateChangeListener { _, _ ->
+            updateVisibility()
         }
-
-        val subtitleView = view.findViewById<TextView>(R.id.routes_subtitle)
-        subtitleView?.text = getString(R.string.routes_subtitle, 4)
     }
 
     private fun openRouteDetail(name: String, gym: String, grade: String) {
