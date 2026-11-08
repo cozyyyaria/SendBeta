@@ -75,6 +75,7 @@ object RouteUi {
         // Gyms come from the database
         val gymLabels = gyms.map { it.label() }.toMutableList()
         if (existing != null && existing.gymLabel !in gymLabels) gymLabels.add(0, existing.gymLabel)
+        if (gymLabels.isEmpty()) gymLabels.add("Other gym") // never leave the dropdown empty
         gymSpinner.adapter = ArrayAdapter(context, android.R.layout.simple_spinner_dropdown_item, gymLabels)
         gradeSpinner.adapter = ArrayAdapter(context, android.R.layout.simple_spinner_dropdown_item, GRADES)
 
@@ -124,7 +125,7 @@ object RouteUi {
             val route = (existing ?: Route(name = "", gymLabel = "", grade = "", tags = "", color = "", rating = 0, notes = ""))
                 .copy(
                     name = name,
-                    gymLabel = gymSpinner.selectedItem as String,
+                    gymLabel = (gymSpinner.selectedItem as? String) ?: "Other gym",
                     grade = grade,
                     tags = tags,
                     color = Route.colorForGrade(grade),

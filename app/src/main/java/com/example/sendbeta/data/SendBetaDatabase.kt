@@ -26,10 +26,15 @@ abstract class SendBetaDatabase : RoomDatabase() {
                     "sendbeta.db"
                 )
                     .addCallback(object : Callback() {
-                        // Runs once, the first time the database file is created
-                        override fun onCreate(db: SupportSQLiteDatabase) {
-                            super.onCreate(db)
-                            SeedData.populate(db)
+                        // Runs every time the database opens. If there are no gyms, the database is new
+                        // (first install, or rebuilt after a schema change), so fill in the starter data.
+                        // Gyms can't be deleted in the app, so this never re-adds data the user removed.
+                        override fun onOpen(db: SupportSQLiteDatabase) {
+                            super.onOpen(db)
+                            val empty = db.query("SELECT COUNT(*) FROM gyms").use { c ->
+                                c.moveToFirst() && c.getInt(0) == 0
+                            }
+                            if (empty) SeedData.populate(db)
                         }
                     })
                     // Prototype: rebuild (and re-seed) the database when the schema changes
