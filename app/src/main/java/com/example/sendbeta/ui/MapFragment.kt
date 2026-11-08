@@ -24,6 +24,10 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.example.sendbeta.R
+import com.example.sendbeta.data.Gym
+import com.example.sendbeta.data.SendBetaRepository
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import org.osmdroid.config.Configuration
@@ -39,34 +43,8 @@ import java.io.File
 import java.util.Calendar
 import java.util.Locale
 
-/**
- * One climbing gym shown on the map.
- * Hours use a 24h clock as decimals (7.5 = 7:30 AM, 23.0 = 11 PM).
- * [dayOverrides] replaces the weekday/weekend hours for specific days (keys = Calendar.MONDAY, etc.).
- * Source: torontoclimbs.ca (gym listings for the City of Toronto).
- */
-data class Gym(
-    val name: String,
-    val chipLabel: String,
-    val area: String,
-    val address: String,
-    val lat: Double,
-    val lon: Double,
-    val types: String,
-    val dayPass: String,
-    val weekdayOpen: Double,
-    val weekdayClose: Double,
-    val weekendOpen: Double,
-    val weekendClose: Double,
-    val dayOverrides: Map<Int, Pair<Double, Double>> = emptyMap()
-) {
-    val point: GeoPoint get() = GeoPoint(lat, lon)
-
-    /** Opening hours (open, close) for a Calendar day-of-week. */
-    fun hoursFor(day: Int): Pair<Double, Double> = dayOverrides[day]
-        ?: if (day == Calendar.SATURDAY || day == Calendar.SUNDAY) weekendOpen to weekendClose
-        else weekdayOpen to weekdayClose
-}
+/** Map position for a gym from the database. */
+private val Gym.point: GeoPoint get() = GeoPoint(lat, lon)
 
 class MapFragment : Fragment() {
 
@@ -83,59 +61,8 @@ class MapFragment : Fragment() {
         }
     }
 
-    // All open climbing gyms in the City of Toronto listed on torontoclimbs.ca
-    private val gyms = listOf(
-        Gym("The Rock Oasis", "Rock Oasis", "Leslieville",
-            "204-388 Carlaw Ave, Toronto, ON", 43.6655, -79.3407,
-            "Bouldering · Top rope · Lead · Auto-belay · Speed", "$28",
-            9.0, 23.0, 9.0, 22.0),
-        Gym("Basecamp Bloor West", "Basecamp Bloor", "Bloor West",
-            "677 Bloor St W, Toronto, ON", 43.6644, -79.4176,
-            "Bouldering · Top rope · Lead · Auto-belay", "$28",
-            10.0, 23.0, 10.0, 22.0,
-            mapOf(Calendar.TUESDAY to (7.0 to 23.0), Calendar.THURSDAY to (7.0 to 23.0))),
-        Gym("Basecamp Queen West", "Basecamp Queen W", "Queen West",
-            "186 Spadina Ave, Toronto, ON", 43.6497, -79.3967,
-            "Bouldering", "$28",
-            10.0, 23.0, 10.0, 22.0),
-        Gym("Joe Rockhead's", "Joe Rockhead's", "Liberty Village",
-            "29 Fraser Ave, Toronto, ON", 43.6380, -79.4256,
-            "Bouldering · Top rope · Lead · Auto-belay", "$28",
-            7.0, 23.0, 9.0, 22.0),
-        Gym("Boulderz Junction", "Boulderz Junction", "The Junction",
-            "1444 Dupont St Unit 16, Toronto, ON", 43.6668, -79.4470,
-            "Bouldering · Auto-belay", "$28",
-            9.0, 23.0, 9.0, 21.0),
-        Gym("Boulderz Etobicoke", "Boulderz Etobicoke", "Etobicoke",
-            "80 The East Mall Unit 9, Etobicoke, ON", 43.6222, -79.5603,
-            "Bouldering · Top rope · Lead · Auto-belay", "$32",
-            9.0, 23.0, 9.0, 21.0),
-        Gym("Rock On Climbing", "Rock On", "Canary District",
-            "474 Front St E, Toronto, ON", 43.6526, -79.3555,
-            "Bouldering", "$24",
-            16.0, 22.0, 10.0, 20.0),
-        Gym("Ethos Climbing", "Ethos", "Waterfront",
-            "128 Queens Quay E, Toronto, ON", 43.6449, -79.3678,
-            "Bouldering", "$30",
-            7.5, 23.0, 7.5, 22.0,
-            mapOf(Calendar.MONDAY to (16.0 to 23.0), Calendar.TUESDAY to (16.0 to 23.0))),
-        Gym("Toronto Climbing Academy", "Climbing Academy", "East York",
-            "11 Curity Ave Unit 3, Toronto, ON", 43.7069, -79.3090,
-            "Bouldering · Top rope · Lead · Auto-belay", "$31",
-            10.0, 23.0, 10.0, 20.0),
-        Gym("Hogtown Boulders", "Hogtown", "Don Mills",
-            "238 Lesmill Rd Unit A, Toronto, ON", 43.7593, -79.3530,
-            "Bouldering", "$30",
-            10.0, 23.0, 10.0, 23.0),
-        Gym("True North Climbing", "True North", "North York",
-            "75 Carl Hall Rd Unit 14, North York, ON", 43.7488, -79.4703,
-            "Bouldering · Top rope · Lead · Auto-belay", "$30",
-            10.0, 22.0, 10.0, 22.0),
-        Gym("Boulder Parc", "Boulder Parc", "Scarborough",
-            "1415 Morningside Ave Unit 2, Scarborough, ON", 43.8033, -79.2101,
-            "Bouldering", "$29",
-            12.0, 23.0, 10.0, 20.0)
-    )
+    // Loaded from the Room database (seeded with torontoclimbs.ca data on first launch)
+    private var gyms: List<Gym> = emptyList()
 
     private var mapView: MapView? = null
     private var myLocationOverlay: MyLocationNewOverlay? = null
@@ -190,15 +117,26 @@ class MapFragment : Fragment() {
         map.controller.setZoom(11.0)
         map.controller.setCenter(GeoPoint(43.7000, -79.4000))
 
+        view.findViewById<ImageButton>(R.id.btn_zoom_in)?.setOnClickListener { map.controller.zoomIn() }
+        view.findViewById<ImageButton>(R.id.btn_zoom_out)?.setOnClickListener { map.controller.zoomOut() }
+        view.findViewById<ImageButton>(R.id.btn_my_location)?.setOnClickListener { onMyLocationClicked() }
+        view.findViewById<Button>(R.id.btn_directions)?.setOnClickListener {
+            gyms.getOrNull(selectedIndex)?.let { openDirections(it) }
+        }
+
+        // Load gyms from the database, then build markers and chips
+        viewLifecycleOwner.lifecycleScope.launch {
+            gyms = SendBetaRepository.get(requireContext()).getGyms()
+            if (gyms.isEmpty() || mapView == null) return@launch
+            onGymsLoaded(view, map)
+        }
+    }
+
+    private fun onGymsLoaded(view: View, map: MapView) {
         view.findViewById<TextView>(R.id.map_subtitle)?.text = "${gyms.size} climbing gyms across Toronto"
 
         addGymMarkers(map)
         setUpGymChips(view)
-
-        view.findViewById<ImageButton>(R.id.btn_zoom_in)?.setOnClickListener { map.controller.zoomIn() }
-        view.findViewById<ImageButton>(R.id.btn_zoom_out)?.setOnClickListener { map.controller.zoomOut() }
-        view.findViewById<ImageButton>(R.id.btn_my_location)?.setOnClickListener { onMyLocationClicked() }
-        view.findViewById<Button>(R.id.btn_directions)?.setOnClickListener { openDirections(gyms[selectedIndex]) }
 
         // Opened from a route ("View on map")? Zoom to that gym. Otherwise fit all gyms on screen.
         val gymLabel = arguments?.getString(ARG_GYM_LABEL)
@@ -424,7 +362,7 @@ class MapFragment : Fragment() {
             userPoint = location
             if (centerOnFix) mapView?.controller?.animateTo(location, 14.0, 600L)
         }
-        updateDistance(gyms[selectedIndex])
+        gyms.getOrNull(selectedIndex)?.let { updateDistance(it) }
     }
 
     // ---------- Directions ----------
@@ -454,7 +392,7 @@ class MapFragment : Fragment() {
         super.onResume()
         mapView?.onResume()
         myLocationOverlay?.enableMyLocation()
-        if (view != null) updateHours(gyms[selectedIndex])
+        if (view != null) gyms.getOrNull(selectedIndex)?.let { updateHours(it) }
     }
 
     override fun onPause() {
