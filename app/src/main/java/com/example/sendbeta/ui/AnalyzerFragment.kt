@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
@@ -16,6 +17,10 @@ import java.util.Locale
 class AnalyzerFragment : Fragment() {
 
     private var isPlaying = false
+
+    // Playback speeds the speed button cycles through
+    private val speeds = listOf("0.5×", "1×", "2×")
+    private var speedIndex = 1 // starts at 1×
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,29 +46,29 @@ class AnalyzerFragment : Fragment() {
             parentFragmentManager.popBackStack()
         }
 
-        // Center Play button (on video)
-        view.findViewById<FrameLayout>(R.id.btn_play_center)?.setOnClickListener {
+        // Play / pause: both buttons share one state and both icons update together
+        val iconCenter = view.findViewById<ImageView>(R.id.icon_play_center)
+        val iconSmall = view.findViewById<ImageView>(R.id.icon_play_small)
+
+        fun togglePlay() {
             isPlaying = !isPlaying
-            if (isPlaying) {
-                Toast.makeText(context, "Playing video", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(context, "Paused", Toast.LENGTH_SHORT).show()
-            }
+            val icon = if (isPlaying) R.drawable.ic_pause else R.drawable.ic_play
+            iconCenter?.setImageResource(icon)
+            iconSmall?.setImageResource(icon)
+            val message = if (isPlaying) "Playing video" else "Paused"
+            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         }
 
-        // Small Play button (in controls)
-        view.findViewById<FrameLayout>(R.id.btn_play_small)?.setOnClickListener {
-            isPlaying = !isPlaying
-            if (isPlaying) {
-                Toast.makeText(context, "Playing video", Toast.LENGTH_SHORT).show()
-            } else {
-                Toast.makeText(context, "Paused", Toast.LENGTH_SHORT).show()
-            }
-        }
+        view.findViewById<FrameLayout>(R.id.btn_play_center)?.setOnClickListener { togglePlay() }
+        view.findViewById<FrameLayout>(R.id.btn_play_small)?.setOnClickListener { togglePlay() }
 
-        // Speed button
-        view.findViewById<TextView>(R.id.btn_speed)?.setOnClickListener {
-            Toast.makeText(context, "Speed: 0.5x", Toast.LENGTH_SHORT).show()
+        // Speed button: cycles 0.5× → 1× → 2× and shows the current speed
+        val speedButton = view.findViewById<TextView>(R.id.btn_speed)
+        speedButton?.text = speeds[speedIndex]
+        speedButton?.setOnClickListener {
+            speedIndex = (speedIndex + 1) % speeds.size
+            speedButton.text = speeds[speedIndex]
+            Toast.makeText(context, "Speed: ${speeds[speedIndex]}", Toast.LENGTH_SHORT).show()
         }
 
         // Scrub bar
