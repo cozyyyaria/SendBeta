@@ -54,6 +54,9 @@ dependencies {
     implementation(libs.androidx.lifecycle.livedata.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.recyclerview)
+
+    // On-device pose detection (Google ML Kit, bundled model: works offline)
+    implementation(libs.mlkit.pose.detection)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(libs.androidx.junit)
