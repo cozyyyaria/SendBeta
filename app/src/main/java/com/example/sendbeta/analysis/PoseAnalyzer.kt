@@ -142,10 +142,50 @@ class PoseAnalyzer(private val context: Context) : Closeable {
 
 /** Results of analysing a whole clip. */
 data class ClipAnalysis(val sampledFrames: Int, val frames: List<PoseFrame>) {
-    val hipPath: List<NormPoint> get() = frames.mapNotNull { it.hipCenter() }
 
-    /** Closest analysed frame to a playback position (for drawing the skeleton while playing). */
-    fun frameAt(timeMs: Long): PoseFrame? = frames.minByOrNull { kotlin.math.abs(it.timeMs - timeMs) }
+    /**
+     * Frames with jitter removed: each landmark is averaged with the same landmark
+     * in the previous and next frame (weights 1-2-1), so the skeleton doesn't shake.
+     */
+    private val smoothed: List<PoseFrame> by lazy {
+        frames.mapIndexed { i, f ->
+            val prev = frames.getOrNull(i - 1)
+            val next = frames.getOrNull(i + 1)
+            PoseFrame(f.timeMs, f.landmarks.mapValues { (type, p) ->
+                var sx = p.x * 2; var sy = p.y * 2; var w = 2f
+                prev?.landmarks?.get(type)?.let { sx += it.x; sy += it.y; w += 1f }
+                next?.landmarks?.get(type)?.let { sx += it.x; sy += it.y; w += 1f }
+                NormPoint(sx / w, sy / w)
+            })
+        }
+    }
+
+    val hipPath: List<NormPoint> get() = smoothed.mapNotNull { it.hipCenter() }
+
+    /** Hip path points with their times, for drawing the trail up to the current moment. */
+    val timedHipPath: List<Pair<Long, NormPoint>> get() = smoothed.mapNotNull { f -> f.hipCenter()?.let { f.timeMs to it } }
+
+    /** Closest analysed frame to a playback position. */
+    fun frameAt(timeMs: Long): PoseFrame? = smoothed.minByOrNull { kotlin.math.abs(it.timeMs - timeMs) }
+
+    /**
+     * Skeleton at any moment of the video: blends the two analysed frames around [timeMs]
+     * so the skeleton glides with the climber instead of jumping between samples.
+     */
+    fun poseAt(timeMs: Long): Map<Int, NormPoint>? {
+        if (smoothed.isEmpty()) return null
+        val after = smoothed.indexOfFirst { it.timeMs >= timeMs }
+        if (after <= 0) return (if (after == 0) smoothed[0] else smoothed.last()).landmarks
+        val a = smoothed[after - 1]
+        val b = smoothed[after]
+        val span = (b.timeMs - a.timeMs).coerceAtLeast(1)
+        if (span > 2000) return (if (timeMs - a.timeMs < b.timeMs - timeMs) a else b).landmarks // big gap: no blending
+        val t = ((timeMs - a.timeMs).toFloat() / span).coerceIn(0f, 1f)
+        return a.landmarks.mapNotNull { (type, pa) ->
+            val pb = b.landmarks[type] ?: return@mapNotNull (if (t < 0.5f) type to pa else null)
+            type to NormPoint(pa.x + (pb.x - pa.x) * t, pa.y + (pb.y - pa.y) * t)
+        }.toMap()
+    }
 
     fun summary(durationMs: Long): String {
         if (frames.isEmpty()) return "No climber detected. Try a clip where the whole body is visible."
