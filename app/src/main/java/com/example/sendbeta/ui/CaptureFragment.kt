@@ -8,6 +8,7 @@ import android.widget.ImageButton
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import com.example.sendbeta.R
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class CaptureFragment : Fragment() {
 
@@ -22,9 +23,14 @@ class CaptureFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         
-        // Back button
+        // Back button: go back if there's a previous screen, otherwise return to the Home tab
         view.findViewById<ImageButton>(R.id.btn_back)?.setOnClickListener {
-            parentFragmentManager.popBackStack()
+            if (parentFragmentManager.backStackEntryCount > 0) {
+                parentFragmentManager.popBackStack()
+            } else {
+                activity?.findViewById<BottomNavigationView>(R.id.bottom_navigation)
+                    ?.selectedItemId = R.id.nav_home
+            }
         }
         
         // Set up record button
