@@ -9,7 +9,10 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.LinearLayout
+import android.widget.RadioButton
 import android.widget.TextView
+import android.widget.Toast
+import com.google.android.material.textfield.TextInputEditText
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -100,13 +103,22 @@ class RouteDetailFragment : Fragment() {
                 .commit()
         }
 
-        // Log attempt -> Capture, remembering which route it's for
+        // Log attempt: with a video (Capture) or a quick log without one
         view.findViewById<Button>(R.id.btn_log_attempt)?.setOnClickListener {
             val route = currentRoute ?: return@setOnClickListener
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, CaptureFragment.newInstance(route.id))
-                .addToBackStack(null)
-                .commit()
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Log an attempt")
+                .setItems(arrayOf("Record or import a video", "Quick log (no video)")) { _, which ->
+                    if (which == 0) {
+                        parentFragmentManager.beginTransaction()
+                            .replace(R.id.fragment_container, CaptureFragment.newInstance(route.id))
+                            .addToBackStack(null)
+                            .commit()
+                    } else {
+                        showAttemptDialog(route, existing = null)
+                    }
+                }
+                .show()
         }
     }
 
@@ -143,24 +155,69 @@ class RouteDetailFragment : Fragment() {
             val row = inflater.inflate(R.layout.item_attempt_row, list, false)
             val number = attempts.size - index // newest first
             row.findViewById<TextView>(R.id.attempt_title).text = String.format(Locale.US, "Attempt %02d", number)
-            val meta = mutableListOf(RouteUi.shortDate(attempt.createdAt), RouteUi.seconds(attempt.durationMs))
-            if (attempt.videoPath != null) meta.add("video")
+            val meta = mutableListOf(RouteUi.shortDate(attempt.createdAt))
+            if (attempt.durationMs > 0) meta.add(RouteUi.seconds(attempt.durationMs))
+            meta.add(if (attempt.videoPath != null) "video" else "logged")
             row.findViewById<TextView>(R.id.attempt_meta).text = meta.joinToString(" · ")
             row.findViewById<TextView>(R.id.attempt_result).apply {
                 text = if (attempt.sent) "Sent" else attempt.note.ifBlank { "Fell" }.take(18)
                 setTextColor(ContextCompat.getColor(requireContext(), if (attempt.sent) R.color.green else R.color.coral))
             }
             row.setOnClickListener { openAttempt(attempt) }
+            // Long-press: edit or delete this attempt
             row.setOnLongClickListener {
                 MaterialAlertDialogBuilder(requireContext())
-                    .setTitle("Delete this attempt?")
-                    .setPositiveButton("Delete") { _, _ -> viewModel.deleteAttempt(attempt) }
-                    .setNegativeButton("Cancel", null)
+                    .setTitle(String.format(Locale.US, "Attempt %02d", number))
+                    .setItems(arrayOf("Edit", "Delete")) { _, which ->
+                        if (which == 0) {
+                            currentRoute?.let { showAttemptDialog(it, attempt) }
+                        } else {
+                            MaterialAlertDialogBuilder(requireContext())
+                                .setTitle("Delete this attempt?")
+                                .setMessage("Its saved video and annotations are deleted too.")
+                                .setPositiveButton("Delete") { _, _ -> viewModel.deleteAttempt(attempt) }
+                                .setNegativeButton("Cancel", null)
+                                .show()
+                        }
+                    }
                     .show()
                 true
             }
             list.addView(row)
         }
+    }
+
+    /** Quick log (existing == null) or edit an attempt's result and note. */
+    private fun showAttemptDialog(route: Route, existing: Attempt?) {
+        val dialogView = layoutInflater.inflate(R.layout.dialog_save_attempt, null)
+        // The route is already known on this screen
+        dialogView.findViewById<View>(R.id.label_route).visibility = View.GONE
+        dialogView.findViewById<View>(R.id.spinner_route).visibility = View.GONE
+        val sentButton = dialogView.findViewById<RadioButton>(R.id.radio_sent)
+        val fellButton = dialogView.findViewById<RadioButton>(R.id.radio_fell)
+        val noteInput = dialogView.findViewById<TextInputEditText>(R.id.input_attempt_note)
+        if (existing != null) {
+            sentButton.isChecked = existing.sent
+            fellButton.isChecked = !existing.sent
+            noteInput.setText(existing.note)
+        }
+
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(if (existing == null) "Log attempt · ${route.name}" else "Edit attempt")
+            .setView(dialogView)
+            .setPositiveButton(if (existing == null) "Log it" else "Save") { _, _ ->
+                val sent = sentButton.isChecked
+                val note = noteInput.text?.toString()?.trim().orEmpty()
+                if (existing == null) {
+                    viewModel.logAttempt(route.id, sent, note)
+                    Toast.makeText(requireContext(), "Attempt logged", Toast.LENGTH_SHORT).show()
+                } else {
+                    viewModel.updateAttempt(existing.copy(sent = sent, note = note))
+                    Toast.makeText(requireContext(), "Attempt updated", Toast.LENGTH_SHORT).show()
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
     }
 
     private fun openAttempt(attempt: Attempt) {

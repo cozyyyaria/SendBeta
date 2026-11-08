@@ -80,7 +80,8 @@ class HomeFragment : Fragment() {
             card.findViewById<View>(R.id.home_attempt_bg).setBackgroundResource(thumbnails[index % thumbnails.size])
             card.findViewById<TextView>(R.id.home_attempt_name).text = a.routeName
             card.findViewById<TextView>(R.id.home_attempt_gym).text = a.gymLabel
-            card.findViewById<TextView>(R.id.home_attempt_duration).text = RouteUi.seconds(a.durationMs)
+            card.findViewById<TextView>(R.id.home_attempt_duration).text =
+                if (a.durationMs > 0) RouteUi.seconds(a.durationMs) else "log"
             card.findViewById<TextView>(R.id.home_attempt_grade).apply {
                 text = a.grade
                 setBackgroundResource(RouteUi.gradeBadgeRes(a.color))

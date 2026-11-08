@@ -60,6 +60,9 @@ class SendBetaRepository private constructor(
     suspend fun updateAnnotations(attemptId: Long, annotations: String?) =
         attemptDao.updateAnnotations(attemptId, annotations)
 
+    /** Edit an attempt's result / note. */
+    suspend fun updateAttempt(attempt: Attempt) = attemptDao.update(attempt)
+
     suspend fun deleteAttempt(attempt: Attempt) {
         deleteVideoFile(attempt.videoPath)
         attemptDao.delete(attempt)

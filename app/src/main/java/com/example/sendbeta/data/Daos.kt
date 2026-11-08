@@ -79,6 +79,9 @@ interface AttemptDao {
     @Query("UPDATE attempts SET annotations = :annotations WHERE id = :id")
     suspend fun updateAnnotations(id: Long, annotations: String?)
 
+    @Update
+    suspend fun update(attempt: Attempt)
+
     @Delete
     suspend fun delete(attempt: Attempt)
 }

@@ -50,6 +50,15 @@ class RouteDetailViewModel(app: Application) : AndroidViewModel(app) {
     fun deleteRoute(route: Route) {
         viewModelScope.launch { repo.deleteRoute(route) }
     }
+    /** Quick log: an attempt without a video. */
+    fun logAttempt(routeId: Long, sent: Boolean, note: String) {
+        viewModelScope.launch {
+            repo.saveAttempt(routeId = routeId, sent = sent, note = note, durationMs = 0L, videoUri = null, source = "Logged")
+        }
+    }
+    fun updateAttempt(attempt: Attempt) {
+        viewModelScope.launch { repo.updateAttempt(attempt) }
+    }
     fun deleteAttempt(attempt: Attempt) {
         viewModelScope.launch { repo.deleteAttempt(attempt) }
     }
