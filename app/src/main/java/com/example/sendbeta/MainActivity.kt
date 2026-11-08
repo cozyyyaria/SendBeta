@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import com.example.sendbeta.ui.HomeFragment
 import com.example.sendbeta.ui.RoutesFragment
 import com.example.sendbeta.ui.CaptureFragment
@@ -42,6 +43,8 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_gyms -> MapFragment()
                 else -> HomeFragment()
             }
+            // Clear any detail screens from the previous tab so Back behaves predictably
+            supportFragmentManager.popBackStackImmediate(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
             loadFragment(fragment)
             true
         }
