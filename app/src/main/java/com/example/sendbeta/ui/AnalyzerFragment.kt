@@ -29,7 +29,10 @@ import com.example.sendbeta.analysis.ClipAnalysis
 import com.example.sendbeta.analysis.NormPoint
 import com.example.sendbeta.analysis.PoseAnalyzer
 import com.example.sendbeta.data.SendBetaRepository
-import com.example.sendbeta.ui.BetaAnalyzerOverlayView.Hold
+import com.example.sendbeta.analysis.Annotation
+import com.example.sendbeta.analysis.AnnotationType
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipGroup
 import kotlinx.coroutines.Job
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
@@ -92,19 +95,22 @@ class AnalyzerFragment : Fragment() {
     private var clipAnalysis: ClipAnalysis? = null
     private var analysisJob: Job? = null
     private var frameJob: Job? = null
-    private var holdsChanged = false
+    private val annotations = mutableListOf<Annotation>()
+    private var annotationsChanged = false
 
     private val progressHandler = Handler(Looper.getMainLooper())
     private val progressUpdater = object : Runnable {
         override fun run() {
             val vv = videoView ?: return
             if (hasVideo) {
-                view?.findViewById<SeekBar>(R.id.scrub_bar)?.progress = vv.currentPosition
-                view?.findViewById<TextView>(R.id.time_current)?.text = formatTime(vv.currentPosition)
-                // While playing, show the closest analysed frame's skeleton
-                clipAnalysis?.frameAt(vv.currentPosition.toLong())?.let { overlay?.pose = it.landmarks }
+                val pos = vv.currentPosition
+                view?.findViewById<SeekBar>(R.id.scrub_bar)?.progress = pos
+                view?.findViewById<TextView>(R.id.time_current)?.text = formatTime(pos)
+                // Smooth skeleton: blended between analysed frames; markers fade by time
+                overlay?.currentTimeMs = pos.toLong()
+                clipAnalysis?.poseAt(pos.toLong())?.let { overlay?.pose = it }
             }
-            progressHandler.postDelayed(this, 200)
+            progressHandler.postDelayed(this, 33) // ~30 fps
         }
     }
 
@@ -136,16 +142,13 @@ class AnalyzerFragment : Fragment() {
             if (v.visibility == View.VISIBLE) overlay?.videoRect = RectF(l.toFloat(), t.toFloat(), r.toFloat(), b.toFloat())
         }
 
-        // Annotation tools: tap a hold type, then tap the hold on the paused video
-        setUpHoldRow(view, R.id.row_start, Hold.START)
-        setUpHoldRow(view, R.id.row_crux, Hold.CRUX)
-        setUpHoldRow(view, R.id.row_top, Hold.TOP)
-        overlay?.onHoldPlaced = { hold, _ ->
-            holdsChanged = true
-            view.findViewById<View>(R.id.btn_play_center)?.visibility = View.VISIBLE
-            updateHoldRow(hold)
-            Toast.makeText(context, "${hold.label.lowercase().replaceFirstChar { it.uppercase() }} hold placed", Toast.LENGTH_SHORT).show()
-        }
+        // Annotation tools: pick a marker, then tap the spot on the paused video
+        setUpMarkerRow(view, R.id.row_start, AnnotationType.START)
+        setUpMarkerRow(view, R.id.row_crux, AnnotationType.CRUX)
+        setUpMarkerRow(view, R.id.row_top, AnnotationType.TOP)
+        setUpMarkerChips(view)
+        overlay?.onPlaced = { type, point -> onMarkerPlaced(type, point) }
+        refreshAnnotations()
 
         view.findViewById<ImageButton>(R.id.btn_back)?.setOnClickListener {
             parentFragmentManager.popBackStack()
@@ -156,11 +159,10 @@ class AnalyzerFragment : Fragment() {
             val id = savedAttemptId
             if (id == null) {
                 showSaveDialog()
-            } else if (holdsChanged) {
-                val holds = overlay?.holds.orEmpty()
+            } else if (annotationsChanged) {
                 val appContext = requireContext().applicationContext
                 viewLifecycleOwner.lifecycleScope.launch {
-                    repo.updateHolds(id, holds[Hold.START]?.serialize(), holds[Hold.CRUX]?.serialize(), holds[Hold.TOP]?.serialize())
+                    repo.updateAnnotations(id, Annotation.toJson(annotations))
                     Toast.makeText(appContext, "Annotations saved", Toast.LENGTH_SHORT).show()
                     parentFragmentManager.popBackStack()
                 }
@@ -189,7 +191,11 @@ class AnalyzerFragment : Fragment() {
         view.findViewById<SeekBar>(R.id.scrub_bar)?.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
                 if (hasVideo) {
-                    if (fromUser) videoView?.seekTo(progress)
+                    if (fromUser) {
+                        videoView?.seekTo(progress)
+                        clipAnalysis?.poseAt(progress.toLong())?.let { overlay?.pose = it }
+                    }
+                    overlay?.currentTimeMs = progress.toLong()
                     timeCurrentText?.text = formatTime(progress)
                 } else {
                     timeCurrentText?.text = String.format(Locale.US, "00:%02d", progress / 10)
@@ -213,10 +219,9 @@ class AnalyzerFragment : Fragment() {
                     val result = if (a.sent) "Sent" else "Fell"
                     view.findViewById<TextView>(R.id.analyzer_subtitle)?.text =
                         "$result · ${RouteUi.shortDate(a.createdAt)} · ${RouteUi.seconds(a.durationMs)}"
-                    overlay?.setHold(Hold.START, NormPoint.parse(a.startHold))
-                    overlay?.setHold(Hold.CRUX, NormPoint.parse(a.cruxHold))
-                    overlay?.setHold(Hold.TOP, NormPoint.parse(a.topHold))
-                    Hold.values().forEach { updateHoldRow(it) }
+                    annotations.clear()
+                    annotations.addAll(Annotation.fromJson(a.annotations))
+                    refreshAnnotations()
                     if (a.videoPath == null) {
                         view.findViewById<TextView>(R.id.analysis_summary)?.text =
                             "This attempt was logged without a video. Import one to analyse it."
@@ -244,7 +249,13 @@ class AnalyzerFragment : Fragment() {
         vv.visibility = View.VISIBLE
         analysisJob?.cancel()
         clipAnalysis = null
-        overlay?.apply { demoMode = false; pose = null; trajectory = emptyList() }
+        overlay?.apply { demoMode = false; pose = null; trajectory = emptyList(); currentTimeMs = 0L }
+        if (source != null && annotations.isNotEmpty()) {
+            // A different video: old markers don't belong to it
+            annotations.clear()
+            annotationsChanged = true
+            refreshAnnotations()
+        }
         if (source != null) {
             v.findViewById<TextView>(R.id.analyzer_title)?.text = "My Beta"
             val time = SimpleDateFormat("h:mm a", Locale.getDefault()).format(Date())
@@ -322,9 +333,7 @@ class AnalyzerFragment : Fragment() {
                 durationMs = durationMs,
                 videoUri = currentVideoUri,
                 source = if (currentVideoUri != null) currentSource else "Logged",
-                startHold = overlay?.holds?.get(Hold.START)?.serialize(),
-                cruxHold = overlay?.holds?.get(Hold.CRUX)?.serialize(),
-                topHold = overlay?.holds?.get(Hold.TOP)?.serialize()
+                annotations = Annotation.toJson(annotations)
             )
             Toast.makeText(appContext, "Attempt saved to $routeName", Toast.LENGTH_SHORT).show()
             parentFragmentManager.popBackStack()
@@ -365,58 +374,144 @@ class AnalyzerFragment : Fragment() {
         if (clipAnalysis == null) return // clip pass still running; it will draw when done
         val position = videoView?.currentPosition?.toLong() ?: return
         frameJob?.cancel()
+        overlay?.currentTimeMs = position
         frameJob = viewLifecycleOwner.lifecycleScope.launch {
             val frame = analyzer.analyzeFrame(position)
-            overlay?.pose = frame?.landmarks
+            // Exact frame if found, otherwise the blended pose
+            overlay?.pose = frame?.landmarks ?: clipAnalysis?.poseAt(position)
         }
     }
 
-    // ---------- Hold annotations ----------
+    // ---------- Annotations ----------
 
-    private fun setUpHoldRow(view: View, rowId: Int, hold: Hold) {
-        view.findViewById<LinearLayout>(rowId)?.setOnClickListener {
-            if (!hasVideo) {
-                Toast.makeText(context, "Import a video first, then mark the holds on it", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            val o = overlay ?: return@setOnClickListener
-            val playButton = view.findViewById<View>(R.id.btn_play_center)
-            if (o.placingHold == hold) { // tap again = cancel
-                o.placingHold = null
-                playButton?.visibility = View.VISIBLE
-                return@setOnClickListener
-            }
-            if (isPlaying) togglePlay() // holds are placed on a paused frame
-            o.placingHold = hold
-            playButton?.visibility = View.GONE // so the whole video can be tapped
-            // scroll up so the video is visible while placing
-            (view as? android.widget.ScrollView)?.smoothScrollTo(0, 0)
-        }
-        // Long-press removes a placed hold
+    /** Start / Crux / Finish rows in the card. */
+    private fun setUpMarkerRow(view: View, rowId: Int, type: AnnotationType) {
+        view.findViewById<LinearLayout>(rowId)?.setOnClickListener { startPlacing(type) }
         view.findViewById<LinearLayout>(rowId)?.setOnLongClickListener {
-            if (overlay?.holds?.containsKey(hold) == true) {
-                overlay?.setHold(hold, null)
-                holdsChanged = true
-                updateHoldRow(hold)
-                Toast.makeText(context, "${hold.label.lowercase()} hold removed", Toast.LENGTH_SHORT).show()
+            if (annotations.removeAll { it.type == type }) {
+                annotationsChanged = true
+                refreshAnnotations()
+                Toast.makeText(context, "${type.label} marker removed", Toast.LENGTH_SHORT).show()
             }
             true
         }
     }
 
-    private fun updateHoldRow(hold: Hold) {
+    /** Chips for the extra marker types (Foot, Rest, Heel hook, Dyno, Note). */
+    private fun setUpMarkerChips(view: View) {
+        val group = view.findViewById<ChipGroup>(R.id.marker_chips) ?: return
+        AnnotationType.values().filter { !it.single }.forEach { type ->
+            group.addView(Chip(requireContext()).apply {
+                text = "+ ${type.label}"
+                isCheckable = false
+                setOnClickListener { startPlacing(type) }
+            })
+        }
+    }
+
+    private fun startPlacing(type: AnnotationType) {
+        if (!hasVideo) {
+            Toast.makeText(context, "Import a video first, then mark it", Toast.LENGTH_SHORT).show()
+            return
+        }
+        val o = overlay ?: return
+        val playButton = view?.findViewById<View>(R.id.btn_play_center)
+        if (o.placingType == type) { // tap again = cancel
+            o.placingType = null
+            playButton?.visibility = View.VISIBLE
+            return
+        }
+        if (isPlaying) togglePlay() // markers are placed on a paused frame
+        o.placingType = type
+        playButton?.visibility = View.GONE // so the whole video can be tapped
+        (view as? android.widget.ScrollView)?.smoothScrollTo(0, 0) // make sure the video is visible
+    }
+
+    private fun onMarkerPlaced(type: AnnotationType, point: NormPoint) {
+        view?.findViewById<View>(R.id.btn_play_center)?.visibility = View.VISIBLE
+        val time = videoView?.currentPosition?.toLong() ?: 0L
+        if (type == AnnotationType.NOTE) {
+            // Ask for the note text
+            val input = TextInputEditText(requireContext()).apply { hint = "e.g. drop knee here" }
+            MaterialAlertDialogBuilder(requireContext())
+                .setTitle("Add a note")
+                .setView(android.widget.FrameLayout(requireContext()).apply {
+                    setPadding(48, 16, 48, 0); addView(input)
+                })
+                .setPositiveButton("Add") { _, _ ->
+                    val text = input.text?.toString()?.trim().orEmpty()
+                    if (text.isNotEmpty()) addAnnotation(type, point, time, text)
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
+        } else {
+            addAnnotation(type, point, time, null)
+        }
+    }
+
+    private fun addAnnotation(type: AnnotationType, point: NormPoint, time: Long, text: String?) {
+        if (type.single) annotations.removeAll { it.type == type } // Start/Crux/Finish: one each (moves it)
+        val id = (annotations.maxOfOrNull { it.id } ?: 0L) + 1
+        annotations.add(Annotation(id, type, point, time, text))
+        annotations.sortBy { it.timeMs }
+        annotationsChanged = true
+        refreshAnnotations()
+        Toast.makeText(context, "${type.label} marked at ${formatTime(time.toInt())}", Toast.LENGTH_SHORT).show()
+    }
+
+    /** Updates the overlay, the Start/Crux/Finish rows and the annotation list. */
+    private fun refreshAnnotations() {
         val v = view ?: return
-        val (subId, iconId, defaultText) = when (hold) {
-            Hold.START -> Triple(R.id.sub_start, R.id.icon_start, "Opening position")
-            Hold.CRUX -> Triple(R.id.sub_crux, R.id.icon_crux, "Hardest move")
-            Hold.TOP -> Triple(R.id.sub_top, R.id.icon_top, "Finish position")
+        overlay?.annotations = annotations.toList()
+
+        listOf(
+            Triple(AnnotationType.START, R.id.sub_start, R.id.icon_start) to "Opening position",
+            Triple(AnnotationType.CRUX, R.id.sub_crux, R.id.icon_crux) to "Hardest move",
+            Triple(AnnotationType.TOP, R.id.sub_top, R.id.icon_top) to "Finish position"
+        ).forEach { (ids, default) ->
+            val (type, subId, iconId) = ids
+            val placed = annotations.firstOrNull { it.type == type }
+            v.findViewById<TextView>(subId)?.text =
+                if (placed != null) "At ${formatTime(placed.timeMs.toInt())} ✓ · tap to move, hold to remove" else default
+            v.findViewById<ImageView>(iconId)?.apply {
+                setImageResource(if (placed != null) R.drawable.ic_check else R.drawable.ic_plus)
+                setColorFilter(ContextCompat.getColor(requireContext(), if (placed != null) R.color.green else R.color.muted))
+            }
         }
-        val placed = overlay?.holds?.containsKey(hold) == true
-        v.findViewById<TextView>(subId)?.text = if (placed) "Placed ✓ · tap to move, hold to remove" else defaultText
-        v.findViewById<ImageView>(iconId)?.apply {
-            setImageResource(if (placed) R.drawable.ic_check else R.drawable.ic_plus)
-            setColorFilter(ContextCompat.getColor(requireContext(), if (placed) R.color.green else R.color.muted))
+
+        val list = v.findViewById<LinearLayout>(R.id.annotation_list) ?: return
+        list.removeAllViews()
+        v.findViewById<View>(R.id.annotation_empty)?.visibility = if (annotations.isEmpty()) View.VISIBLE else View.GONE
+        val inflater = LayoutInflater.from(requireContext())
+        annotations.forEach { a ->
+            val row = inflater.inflate(R.layout.item_annotation, list, false)
+            row.findViewById<View>(R.id.annotation_dot).background =
+                android.graphics.drawable.GradientDrawable().apply {
+                    shape = android.graphics.drawable.GradientDrawable.OVAL; setColor(a.type.color)
+                }
+            row.findViewById<TextView>(R.id.annotation_time).text = formatTime(a.timeMs.toInt())
+            row.findViewById<TextView>(R.id.annotation_label).text =
+                if (a.type == AnnotationType.NOTE) "Note: ${a.text}" else a.type.label
+            row.setOnClickListener { jumpTo(a.timeMs) }
+            row.findViewById<ImageButton>(R.id.annotation_delete).setOnClickListener {
+                annotations.remove(a)
+                annotationsChanged = true
+                refreshAnnotations()
+            }
+            list.addView(row)
         }
+    }
+
+    /** Pauses and jumps the video to a marker's moment. */
+    private fun jumpTo(timeMs: Long) {
+        val vv = videoView ?: return
+        if (isPlaying) togglePlay()
+        vv.seekTo(timeMs.toInt())
+        view?.findViewById<SeekBar>(R.id.scrub_bar)?.progress = timeMs.toInt()
+        overlay?.currentTimeMs = timeMs
+        clipAnalysis?.poseAt(timeMs)?.let { overlay?.pose = it }
+        analyzeCurrentFrame()
+        (view as? android.widget.ScrollView)?.smoothScrollTo(0, 0)
     }
 
     private fun togglePlay() {
