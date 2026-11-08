@@ -78,7 +78,7 @@ class RouteDetailFragment : Fragment() {
         // View on map button
         view.findViewById<Button>(R.id.btn_view_map)?.setOnClickListener {
             parentFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, MapFragment())
+                .replace(R.id.fragment_container, MapFragment.newInstance(gymName))
                 .addToBackStack(null)
                 .commit()
         }
