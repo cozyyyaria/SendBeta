@@ -32,7 +32,7 @@ class AboutFragment : Fragment() {
 
         // Set up GitHub button
         view.findViewById<Button>(R.id.btn_github)?.setOnClickListener {
-            val url = "https://github.com/arianacruz/sendbeta"
+            val url = "https://github.com/cozyyyaria/SendBeta"
             try {
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
                 startActivity(intent)
