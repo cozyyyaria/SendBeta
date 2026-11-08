@@ -34,6 +34,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="monospace"
                     android:letterSpacing="0.13"
+                    android:id="@+id/home_date"
                     android:text="Wednesday, September 18"
                     android:textAllCaps="false"
                     android:textColor="#7A867F"
@@ -132,6 +133,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:lineSpacingMultiplier="1.3"
+                        android:id="@+id/hero_subtitle"
                         android:text="Two sends this week. One move closer to your first V7."
                         android:textColor="#3D4B30"
                         android:textSize="12sp" />
@@ -279,6 +281,7 @@
                         android:layout_height="wrap_content"
                         android:drawableStart="@drawable/ic_dot_green"
                         android:drawablePadding="6dp"
+                        android:id="@+id/stats_updated"
                         android:text="Updated today"
                         android:textColor="#77827B"
                         android:textSize="10sp" />
@@ -304,6 +307,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="monospace"
                             android:letterSpacing="-0.06"
+                            android:id="@+id/stat_sends"
                             android:text="14"
                             android:textColor="@color/ink"
                             android:textSize="24sp"
@@ -316,6 +320,7 @@
                             android:background="@drawable/stat_badge"
                             android:paddingHorizontal="6dp"
                             android:paddingVertical="3dp"
+                            android:id="@+id/stat_sends_week"
                             android:text="+3"
                             android:textColor="@color/green"
                             android:textSize="9sp"
@@ -342,6 +347,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="monospace"
                             android:letterSpacing="-0.06"
+                            android:id="@+id/stat_projects"
                             android:text="06"
                             android:textColor="@color/ink"
                             android:textSize="24sp"
@@ -354,6 +360,7 @@
                             android:background="@drawable/stat_badge"
                             android:paddingHorizontal="6dp"
                             android:paddingVertical="3dp"
+                            android:id="@+id/stat_projects_sub"
                             android:text="2 close"
                             android:textColor="@color/green"
                             android:textSize="9sp"
@@ -388,6 +395,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="monospace"
                             android:letterSpacing="-0.06"
+                            android:id="@+id/stat_top_grade"
                             android:text="V6"
                             android:textColor="@color/ink"
                             android:textSize="24sp"
@@ -541,331 +549,20 @@
                 android:textStyle="bold" />
         </LinearLayout>
 
-        <!-- Attempt Item 1: The Overhang -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/attempt_card_1"
+        <!-- Recent attempts (filled from the database) -->
+        <LinearLayout
+            android:id="@+id/recent_attempts"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            app:cardBackgroundColor="@color/white"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="0dp"
-            app:strokeColor="@color/line"
-            app:strokeWidth="1dp">
+            android:orientation="vertical" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <FrameLayout
-                    android:layout_width="125dp"
-                    android:layout_height="100dp">
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@drawable/bg_attempt_overhang" />
-
-                    <!-- Sent Badge with check icon -->
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="24dp"
-                        android:layout_gravity="top|start"
-                        android:layout_margin="8dp"
-                        android:background="@drawable/badge_sent"
-                        android:drawableStart="@drawable/ic_check_small"
-                        android:drawablePadding="4dp"
-                        android:fontFamily="monospace"
-                        android:gravity="center"
-                        android:paddingHorizontal="8dp"
-                        android:text="Sent"
-                        android:textAllCaps="true"
-                        android:textColor="#54700C"
-                        android:textSize="9sp"
-                        android:textStyle="bold"
-                        app:drawableTint="#54700C" />
-
-                    <!-- Duration -->
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="bottom|end"
-                        android:layout_margin="8dp"
-                        android:fontFamily="monospace"
-                        android:text="22s"
-                        android:textColor="@color/white"
-                        android:textSize="10sp"
-                        android:textStyle="bold" />
-
-                    <!-- Play Button -->
-                    <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:layout_gravity="bottom|start"
-                        android:layout_margin="8dp"
-                        android:background="@drawable/play_button_background"
-                        android:padding="8dp"
-                        android:src="@drawable/ic_play"
-                        app:tint="@color/white" />
-                </FrameLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:padding="14dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="The Overhang"
-                        android:textColor="@color/ink"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="3dp"
-                        android:text="Basecamp"
-                        android:textColor="#89918C"
-                        android:textSize="12sp" />
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="38dp"
-                    android:layout_height="38dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginEnd="14dp"
-                    android:background="@drawable/grade_badge_lime"
-                    android:fontFamily="monospace"
-                    android:gravity="center"
-                    android:text="V5"
-                    android:textColor="@color/ink"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Attempt Item 2: Cave Roof -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/attempt_card_2"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/recent_empty"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp"
-            app:cardBackgroundColor="@color/white"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="0dp"
-            app:strokeColor="@color/line"
-            app:strokeWidth="1dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <FrameLayout
-                    android:layout_width="125dp"
-                    android:layout_height="100dp">
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@drawable/bg_attempt_cave" />
-
-                    <!-- Fall Badge with close icon -->
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="24dp"
-                        android:layout_gravity="top|start"
-                        android:layout_margin="8dp"
-                        android:background="@drawable/badge_fall"
-                        android:drawableStart="@drawable/ic_close"
-                        android:drawablePadding="4dp"
-                        android:fontFamily="monospace"
-                        android:gravity="center"
-                        android:paddingHorizontal="8dp"
-                        android:text="Fall"
-                        android:textAllCaps="true"
-                        android:textColor="#C04E49"
-                        android:textSize="9sp"
-                        android:textStyle="bold"
-                        app:drawableTint="#C04E49" />
-
-                    <!-- Duration -->
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="bottom|end"
-                        android:layout_margin="8dp"
-                        android:fontFamily="monospace"
-                        android:text="18s"
-                        android:textColor="@color/white"
-                        android:textSize="10sp"
-                        android:textStyle="bold" />
-
-                    <!-- Play Button -->
-                    <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:layout_gravity="bottom|start"
-                        android:layout_margin="8dp"
-                        android:background="@drawable/play_button_background"
-                        android:padding="8dp"
-                        android:src="@drawable/ic_play"
-                        app:tint="@color/white" />
-                </FrameLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:padding="14dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Cave Roof"
-                        android:textColor="@color/ink"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="3dp"
-                        android:text="Rock Oasis"
-                        android:textColor="#89918C"
-                        android:textSize="12sp" />
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="38dp"
-                    android:layout_height="38dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginEnd="14dp"
-                    android:background="@drawable/grade_badge_coral"
-                    android:fontFamily="monospace"
-                    android:gravity="center"
-                    android:text="V7"
-                    android:textColor="@color/ink"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <!-- Attempt Item 3: Slab Balance -->
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/attempt_card_3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="24dp"
-            app:cardBackgroundColor="@color/white"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="0dp"
-            app:strokeColor="@color/line"
-            app:strokeWidth="1dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <FrameLayout
-                    android:layout_width="125dp"
-                    android:layout_height="100dp">
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:background="@drawable/bg_attempt_slab" />
-
-                    <!-- Sent Badge -->
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="24dp"
-                        android:layout_gravity="top|start"
-                        android:layout_margin="8dp"
-                        android:background="@drawable/badge_sent"
-                        android:drawableStart="@drawable/ic_check_small"
-                        android:drawablePadding="4dp"
-                        android:fontFamily="monospace"
-                        android:gravity="center"
-                        android:paddingHorizontal="8dp"
-                        android:text="Sent"
-                        android:textAllCaps="true"
-                        android:textColor="#54700C"
-                        android:textSize="9sp"
-                        android:textStyle="bold"
-                        app:drawableTint="#54700C" />
-
-                    <!-- Duration -->
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="bottom|end"
-                        android:layout_margin="8dp"
-                        android:fontFamily="monospace"
-                        android:text="31s"
-                        android:textColor="@color/white"
-                        android:textSize="10sp"
-                        android:textStyle="bold" />
-
-                    <!-- Play Button -->
-                    <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:layout_gravity="bottom|start"
-                        android:layout_margin="8dp"
-                        android:background="@drawable/play_button_background"
-                        android:padding="8dp"
-                        android:src="@drawable/ic_play"
-                        app:tint="@color/white" />
-                </FrameLayout>
-
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:padding="14dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Slab Balance"
-                        android:textColor="@color/ink"
-                        android:textSize="15sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="3dp"
-                        android:text="Boulderz"
-                        android:textColor="#89918C"
-                        android:textSize="12sp" />
-                </LinearLayout>
-
-                <TextView
-                    android:layout_width="38dp"
-                    android:layout_height="38dp"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginEnd="14dp"
-                    android:background="@drawable/grade_badge_yellow"
-                    android:fontFamily="monospace"
-                    android:gravity="center"
-                    android:text="V3"
-                    android:textColor="@color/ink"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
+            android:text="No attempts yet. Record or import your first beta!"
+            android:textColor="@color/muted"
+            android:textSize="12sp"
+            android:visibility="gone" />
     </LinearLayout>
 </ScrollView>
