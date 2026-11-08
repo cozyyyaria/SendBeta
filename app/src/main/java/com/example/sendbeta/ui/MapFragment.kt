@@ -28,6 +28,7 @@ import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.BoundingBox
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.views.MapView
@@ -38,7 +39,12 @@ import java.io.File
 import java.util.Calendar
 import java.util.Locale
 
-/** One climbing gym shown on the map. Hours are 24h clock (e.g. 23 = 11 PM). */
+/**
+ * One climbing gym shown on the map.
+ * Hours use a 24h clock as decimals (7.5 = 7:30 AM, 23.0 = 11 PM).
+ * [dayOverrides] replaces the weekday/weekend hours for specific days (keys = Calendar.MONDAY, etc.).
+ * Source: torontoclimbs.ca (gym listings for the City of Toronto).
+ */
 data class Gym(
     val name: String,
     val chipLabel: String,
@@ -46,12 +52,20 @@ data class Gym(
     val address: String,
     val lat: Double,
     val lon: Double,
-    val weekdayOpen: Int,
-    val weekdayClose: Int,
-    val weekendOpen: Int,
-    val weekendClose: Int
+    val types: String,
+    val dayPass: String,
+    val weekdayOpen: Double,
+    val weekdayClose: Double,
+    val weekendOpen: Double,
+    val weekendClose: Double,
+    val dayOverrides: Map<Int, Pair<Double, Double>> = emptyMap()
 ) {
     val point: GeoPoint get() = GeoPoint(lat, lon)
+
+    /** Opening hours (open, close) for a Calendar day-of-week. */
+    fun hoursFor(day: Int): Pair<Double, Double> = dayOverrides[day]
+        ?: if (day == Calendar.SATURDAY || day == Calendar.SUNDAY) weekendOpen to weekendClose
+        else weekdayOpen to weekdayClose
 }
 
 class MapFragment : Fragment() {
@@ -69,17 +83,58 @@ class MapFragment : Fragment() {
         }
     }
 
+    // All open climbing gyms in the City of Toronto listed on torontoclimbs.ca
     private val gyms = listOf(
         Gym("The Rock Oasis", "Rock Oasis", "Leslieville",
-            "388 Carlaw Ave, Toronto, ON", 43.6669, -79.3409, 9, 23, 9, 22),
+            "204-388 Carlaw Ave, Toronto, ON", 43.6655, -79.3407,
+            "Bouldering · Top rope · Lead · Auto-belay · Speed", "$28",
+            9.0, 23.0, 9.0, 22.0),
         Gym("Basecamp Bloor West", "Basecamp Bloor", "Bloor West",
-            "677 Bloor St W, Toronto, ON", 43.6643, -79.4166, 10, 23, 10, 22),
+            "677 Bloor St W, Toronto, ON", 43.6644, -79.4176,
+            "Bouldering · Top rope · Lead · Auto-belay", "$28",
+            10.0, 23.0, 10.0, 22.0,
+            mapOf(Calendar.TUESDAY to (7.0 to 23.0), Calendar.THURSDAY to (7.0 to 23.0))),
         Gym("Basecamp Queen West", "Basecamp Queen W", "Queen West",
-            "186 Spadina Ave, Toronto, ON", 43.6491, -79.3965, 10, 23, 10, 22),
+            "186 Spadina Ave, Toronto, ON", 43.6497, -79.3967,
+            "Bouldering", "$28",
+            10.0, 23.0, 10.0, 22.0),
         Gym("Joe Rockhead's", "Joe Rockhead's", "Liberty Village",
-            "29 Fraser Ave, Toronto, ON", 43.6381, -79.4253, 9, 22, 9, 22),
-        Gym("Boulderz Etobicoke", "Boulderz", "Etobicoke",
-            "80 The East Mall, Etobicoke, ON", 43.6230, -79.5605, 12, 23, 9, 21)
+            "29 Fraser Ave, Toronto, ON", 43.6380, -79.4256,
+            "Bouldering · Top rope · Lead · Auto-belay", "$28",
+            7.0, 23.0, 9.0, 22.0),
+        Gym("Boulderz Junction", "Boulderz Junction", "The Junction",
+            "1444 Dupont St Unit 16, Toronto, ON", 43.6668, -79.4470,
+            "Bouldering · Auto-belay", "$28",
+            9.0, 23.0, 9.0, 21.0),
+        Gym("Boulderz Etobicoke", "Boulderz Etobicoke", "Etobicoke",
+            "80 The East Mall Unit 9, Etobicoke, ON", 43.6222, -79.5603,
+            "Bouldering · Top rope · Lead · Auto-belay", "$32",
+            9.0, 23.0, 9.0, 21.0),
+        Gym("Rock On Climbing", "Rock On", "Canary District",
+            "474 Front St E, Toronto, ON", 43.6526, -79.3555,
+            "Bouldering", "$24",
+            16.0, 22.0, 10.0, 20.0),
+        Gym("Ethos Climbing", "Ethos", "Waterfront",
+            "128 Queens Quay E, Toronto, ON", 43.6449, -79.3678,
+            "Bouldering", "$30",
+            7.5, 23.0, 7.5, 22.0,
+            mapOf(Calendar.MONDAY to (16.0 to 23.0), Calendar.TUESDAY to (16.0 to 23.0))),
+        Gym("Toronto Climbing Academy", "Climbing Academy", "East York",
+            "11 Curity Ave Unit 3, Toronto, ON", 43.7069, -79.3090,
+            "Bouldering · Top rope · Lead · Auto-belay", "$31",
+            10.0, 23.0, 10.0, 20.0),
+        Gym("Hogtown Boulders", "Hogtown", "Don Mills",
+            "238 Lesmill Rd Unit A, Toronto, ON", 43.7593, -79.3530,
+            "Bouldering", "$30",
+            10.0, 23.0, 10.0, 23.0),
+        Gym("True North Climbing", "True North", "North York",
+            "75 Carl Hall Rd Unit 14, North York, ON", 43.7488, -79.4703,
+            "Bouldering · Top rope · Lead · Auto-belay", "$30",
+            10.0, 22.0, 10.0, 22.0),
+        Gym("Boulder Parc", "Boulder Parc", "Scarborough",
+            "1415 Morningside Ave Unit 2, Scarborough, ON", 43.8033, -79.2101,
+            "Bouldering", "$29",
+            12.0, 23.0, 10.0, 20.0)
     )
 
     private var mapView: MapView? = null
@@ -130,12 +185,12 @@ class MapFragment : Fragment() {
         map.setTileSource(TileSourceFactory.MAPNIK)
         map.setMultiTouchControls(true) // pinch to zoom, drag to pan
         map.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER) // we use our own buttons
-        map.minZoomLevel = 9.0
+        map.minZoomLevel = 9.0 // keeps the view around the GTA
         map.maxZoomLevel = 19.0
-        map.controller.setZoom(12.0)
-        map.controller.setCenter(GeoPoint(43.6532, -79.4300))
+        map.controller.setZoom(11.0)
+        map.controller.setCenter(GeoPoint(43.7000, -79.4000))
 
-        view.findViewById<TextView>(R.id.map_subtitle)?.text = "${gyms.size} gyms around Toronto"
+        view.findViewById<TextView>(R.id.map_subtitle)?.text = "${gyms.size} climbing gyms across Toronto"
 
         addGymMarkers(map)
         setUpGymChips(view)
@@ -145,9 +200,14 @@ class MapFragment : Fragment() {
         view.findViewById<ImageButton>(R.id.btn_my_location)?.setOnClickListener { onMyLocationClicked() }
         view.findViewById<Button>(R.id.btn_directions)?.setOnClickListener { openDirections(gyms[selectedIndex]) }
 
-        // Preselect a gym if we were opened from a route ("View on map")
-        val startIndex = arguments?.getString(ARG_GYM_LABEL)?.let { findGymIndex(it) } ?: 0
-        selectGym(startIndex, animate = false)
+        // Opened from a route ("View on map")? Zoom to that gym. Otherwise fit all gyms on screen.
+        val gymLabel = arguments?.getString(ARG_GYM_LABEL)
+        if (gymLabel != null) {
+            selectGym(findGymIndex(gymLabel), animate = false)
+        } else {
+            selectGym(0, animate = false, moveCamera = false)
+            map.post { showAllGyms() }
+        }
 
         // If permission was already granted earlier, show the blue dot quietly
         if (hasLocationPermission()) enableMyLocation(centerOnFix = false)
@@ -191,7 +251,14 @@ class MapFragment : Fragment() {
     }
 
     /** Highlights the gym on the map, in the chips, and fills in the info card. */
-    private fun selectGym(index: Int, animate: Boolean = true) {
+    private fun showAllGyms() {
+        val map = mapView ?: return
+        val box = BoundingBox.fromGeoPoints(gyms.map { it.point })
+        val padding = (40 * resources.displayMetrics.density).toInt()
+        map.zoomToBoundingBox(box, false, padding)
+    }
+
+    private fun selectGym(index: Int, animate: Boolean = true, moveCamera: Boolean = true) {
         selectedIndex = index
         val gym = gyms[index]
         val v = view ?: return
@@ -200,7 +267,8 @@ class MapFragment : Fragment() {
             marker.icon = markerIcon(i + 1, selected = i == index)
         }
         mapView?.let { map ->
-            if (animate) map.controller.animateTo(gym.point, 14.0, 600L)
+            if (!moveCamera) { /* keep current view */ }
+            else if (animate) map.controller.animateTo(gym.point, 14.0, 600L)
             else {
                 map.controller.setZoom(13.0)
                 map.controller.setCenter(gym.point)
@@ -219,6 +287,7 @@ class MapFragment : Fragment() {
 
         v.findViewById<TextView>(R.id.gym_name)?.text = gym.name
         v.findViewById<TextView>(R.id.gym_address)?.text = gym.address
+        v.findViewById<TextView>(R.id.gym_types)?.text = "${gym.types}  ·  ${gym.dayPass} day pass"
         updateDistance(gym)
         updateHours(gym)
     }
@@ -234,28 +303,31 @@ class MapFragment : Fragment() {
     private fun updateHours(gym: Gym) {
         val v = view ?: return
         val now = Calendar.getInstance()
-        val day = now.get(Calendar.DAY_OF_WEEK)
-        val isWeekend = day == Calendar.SATURDAY || day == Calendar.SUNDAY
-        val open = if (isWeekend) gym.weekendOpen else gym.weekdayOpen
-        val close = if (isWeekend) gym.weekendClose else gym.weekdayClose
-        val hour = now.get(Calendar.HOUR_OF_DAY)
+        val (open, close) = gym.hoursFor(now.get(Calendar.DAY_OF_WEEK))
+        val time = now.get(Calendar.HOUR_OF_DAY) + now.get(Calendar.MINUTE) / 60.0
 
-        val isOpen = hour in open until close
+        val isOpen = time >= open && time < close
         val statusView = v.findViewById<TextView>(R.id.gym_hours)
         statusView?.text = if (isOpen) "Open" else "Closed"
         statusView?.setTextColor(Color.parseColor(if (isOpen) "#1A7F55" else "#D64545"))
         v.findViewById<TextView>(R.id.gym_hours_label)?.text = when {
             isOpen -> "until ${formatHour(close)}"
-            hour < open -> "opens ${formatHour(open)}"
+            time < open -> "opens ${formatHour(open)}"
             else -> "opens tomorrow"
         }
     }
 
-    private fun formatHour(h: Int): String = when {
-        h == 0 || h == 24 -> "12 AM"
-        h < 12 -> "$h AM"
-        h == 12 -> "12 PM"
-        else -> "${h - 12} PM"
+    /** 7.5 -> "7:30 AM", 23.0 -> "11 PM" */
+    private fun formatHour(value: Double): String {
+        val h = value.toInt()
+        val minutes = ((value - h) * 60).toInt()
+        val hour12 = when {
+            h == 0 || h == 24 -> 12
+            h > 12 -> h - 12
+            else -> h
+        }
+        val suffix = if (h in 12..23) "PM" else "AM"
+        return if (minutes == 0) "$hour12 $suffix" else String.format(Locale.US, "%d:%02d %s", hour12, minutes, suffix)
     }
 
     /** Matches a route's gym label like "Joe Rockhead's · Liberty" to a gym in the list. */
