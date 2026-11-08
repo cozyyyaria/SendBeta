@@ -29,15 +29,33 @@ _Add 3–5 screenshots here (Home, Routes, Analyzer, Map). In Android Studio: Ru
 | Screen | What you can do |
 |---|---|
 | **Splash** | Branded launch screen that fades into the app |
-| **Home** | Dashboard with recent attempts, a "Record Beta" shortcut, and a link to all routes |
-| **Routes** | Search routes by name, gym, or style, and filter with chips (Overhang, Crimps, Slab, Dynamic). Shows a live result count and an empty state |
-| **Route Detail** | Grade, gym, and attempt history for a route; log a new attempt or view the gym on the map |
-| **Capture** | Camera screen with record, flip-camera, and gallery controls |
-| **Beta Analyzer** | Custom-drawn overlay (`BetaAnalyzerOverlayView`) showing a pose skeleton, the hip trajectory path, and START / CRUX / TOP hold markers, plus playback controls and a scrubber |
-| **Gyms Map** | Tap a gym marker to see its details, then open turn-by-turn directions in Google Maps |
+| **Home** | Live stats from the database (total sends, sends this week, active projects, top grade sent) and your 3 most recent attempts |
+| **Routes** | Full **CRUD**: add a route (+ button), edit or delete it (long-press), search by name/gym/grade/style, filter with chips |
+| **Route Detail** | Notes, style tags, rating, status (Projecting / Sent) and the full attempt history from the database; edit/delete the route, delete an attempt (long-press), share the route, log a new attempt |
+| **Capture** | Record with the device camera app **or import a climbing video** from the device |
+| **Beta Analyzer** | Plays the video with a pose/hold overlay (`BetaAnalyzerOverlayView`), play/pause, scrubbing and 0.5× / 1× / 2× speed. **Save** stores the attempt (route, sent/fell, note, duration, video) in the database |
+| **Gyms Map** | Real OpenStreetMap map with all 12 Toronto climbing gyms (loaded from the database): tap pins or chips, zoom, my location, distance, open/closed from real hours, directions |
 | **About** | App info and a link to this repository |
 
-**Navigation:** a bottom navigation bar (Home · Routes · Capture · Gyms) plus a fragment back stack for detail screens.
+---
+
+## Architecture & data layer
+
+SendBeta follows the recommended Android architecture: **UI → ViewModel → Repository → Room (SQLite)**.
+
+```
+Fragments (UI)  ──observe LiveData──▶  ViewModels  ──▶  SendBetaRepository  ──▶  Room DAOs  ──▶  sendbeta.db
+```
+
+| Layer | Files | Responsibility |
+|---|---|---|
+| **Entities** | `data/Entities.kt` | `Gym`, `Route`, `Attempt` tables (+ `AttemptWithRoute` join result). `Attempt.routeId` is a foreign key with `ON DELETE CASCADE` |
+| **DAOs** | `data/Daos.kt` | SQL queries; list queries return `Flow` so the UI updates automatically |
+| **Database** | `data/SendBetaDatabase.kt`, `data/SeedData.kt` | Singleton Room database; seeded on first launch with the 12 Toronto gyms (torontoclimbs.ca) and sample routes/attempts |
+| **Repository** | `data/SendBetaRepository.kt` | Single source of truth; copies saved videos into app-private storage and cleans them up on delete |
+| **ViewModels** | `ui/ViewModels.kt` | `HomeViewModel`, `RoutesViewModel`, `RouteDetailViewModel` expose `LiveData` and run writes in `viewModelScope` |
+
+Data persists between app launches. To reset it, uninstall the app (or clear its storage).
 
 ---
 
@@ -46,46 +64,24 @@ _Add 3–5 screenshots here (Home, Routes, Analyzer, Map). In Android Studio: Ru
 | Feature | Prototype status | Planned for the final version |
 |---|---|---|
 | Navigation & all screens | ✅ Working | — |
-| Route search & filtering | ✅ Working (sample data) | Load routes from a local database (Room) |
-| Directions to a gym | ✅ Opens Google Maps | Live map with the Google Maps SDK |
-| Pose overlay | 🟡 Drawn from sample coordinates | Real-time pose detection with ML Kit |
-| Video recording | 🟡 UI only | Record with CameraX |
-| Saving attempts | 🟡 UI only | Store attempts and notes on the device |
+| Local database (Room) | ✅ Routes, attempts, gyms persisted | Cloud sync / user accounts |
+| Routes CRUD, search & filter | ✅ Working | Photos of each route |
+| Record / import video | ✅ Camera app + file import | In-app CameraX recording |
+| Video playback & analysis controls | ✅ Working | Frame-by-frame stepping |
+| Gym map | ✅ Real map, 12 gyms, directions | Live gym busy-ness |
+| Pose overlay | 🟡 Drawn preview (static skeleton) | Real-time pose detection with Google ML Kit |
 
 ---
 
 ## Tech stack
 
 - **Language:** Kotlin
-- **UI:** XML layouts, Fragments, Material Components (BottomNavigationView, Chips, Cards)
+- **UI:** XML layouts, Fragments, RecyclerView, Material Components (BottomNavigationView, Chips, Cards, Dialogs)
+- **Data:** Room (SQLite) with KSP, Kotlin Coroutines & Flow, ViewModel + LiveData
+- **Map:** osmdroid (OpenStreetMap), following the OSM tile usage policy
+- **Media:** VideoView / MediaPlayer, camera & file-picker intents (Activity Result API)
 - **Custom drawing:** `Canvas` / `Paint` / `Path` in a custom `View`
-- **Intents:** `ACTION_VIEW` for maps and web links
 - **Min SDK:** 24 · **Target SDK:** 34
-- **Build:** Gradle (Kotlin DSL) with a version catalog
-
----
-
-## Project structure
-
-```
-app/src/main/
-├── java/com/example/sendbeta/
-│   ├── SplashActivity.kt
-│   ├── MainActivity.kt              # Bottom navigation + fragment container
-│   └── ui/
-│       ├── HomeFragment.kt
-│       ├── RoutesFragment.kt        # Search + filter logic
-│       ├── RouteDetailFragment.kt
-│       ├── CaptureFragment.kt
-│       ├── AnalyzerFragment.kt
-│       ├── BetaAnalyzerOverlayView.kt  # Custom-drawn pose overlay
-│       ├── MapFragment.kt
-│       └── AboutFragment.kt
-└── res/
-    ├── layout/      # One layout per screen
-    ├── drawable/    # Vector icons and shapes
-    └── values/      # Colors, strings, themes
-```
 
 ---
 
