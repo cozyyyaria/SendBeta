@@ -96,11 +96,20 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <!-- Video placeholder / background -->
+                <!-- Video placeholder / background (hidden once a video is loaded) -->
                 <View
+                    android:id="@+id/video_placeholder"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:background="@drawable/camera_placeholder" />
+
+                <!-- Imported or recorded climbing video -->
+                <VideoView
+                    android:id="@+id/video_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:visibility="gone" />
 
                 <!-- Custom Pose & Hold Overlay Canvas -->
                 <com.example.sendbeta.ui.BetaAnalyzerOverlayView
@@ -124,6 +133,23 @@
                     android:textColor="@color/ink"
                     android:textSize="10sp"
                     app:drawableTint="@color/ink" />
+
+                <!-- Import a climbing video from the device -->
+                <TextView
+                    android:id="@+id/btn_import_video"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|end"
+                    android:layout_margin="14dp"
+                    android:background="@drawable/camera_overlay_pill"
+                    android:drawableStart="@drawable/ic_gallery"
+                    android:drawablePadding="6dp"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="6dp"
+                    android:text="Import video"
+                    android:textColor="@color/white"
+                    android:textSize="10sp"
+                    app:drawableTint="@color/white" />
 
                 <!-- Center Play Button -->
                 <FrameLayout
