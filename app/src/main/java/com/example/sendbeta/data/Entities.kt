@@ -92,10 +92,8 @@ data class Attempt(
     val videoPath: String?,     // copy of the video inside the app's private storage
     val source: String,         // "Imported video" | "Recorded attempt" | "Logged"
     val createdAt: Long = System.currentTimeMillis(),
-    // Hold annotations placed on the video, stored as "x,y" fractions of the frame
-    val startHold: String? = null,
-    val cruxHold: String? = null,
-    val topHold: String? = null
+    // Markers placed on the video (type, position, time, note) stored as JSON text
+    val annotations: String? = null
 )
 
 /** Attempt joined with its route, for the Home "Recent beta" list and the analyzer. */
@@ -112,7 +110,5 @@ data class AttemptWithRoute(
     val gymLabel: String,
     val grade: String,
     val color: String,
-    val startHold: String?,
-    val cruxHold: String?,
-    val topHold: String?
+    val annotations: String?
 )

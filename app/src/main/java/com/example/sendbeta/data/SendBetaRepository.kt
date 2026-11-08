@@ -46,19 +46,19 @@ class SendBetaRepository private constructor(
      */
     suspend fun saveAttempt(
         routeId: Long, sent: Boolean, note: String, durationMs: Long, videoUri: Uri?, source: String,
-        startHold: String? = null, cruxHold: String? = null, topHold: String? = null
+        annotations: String? = null
     ): Long {
         val path = videoUri?.let { copyVideo(it) }
         return attemptDao.insert(
             Attempt(routeId = routeId, sent = sent, note = note, durationMs = durationMs,
                 videoPath = path, source = source,
-                startHold = startHold, cruxHold = cruxHold, topHold = topHold)
+                annotations = annotations)
         )
     }
 
-    /** Update the hold annotations of an attempt that's already saved. */
-    suspend fun updateHolds(attemptId: Long, start: String?, crux: String?, top: String?) =
-        attemptDao.updateHolds(attemptId, start, crux, top)
+    /** Update the markers of an attempt that's already saved. */
+    suspend fun updateAnnotations(attemptId: Long, annotations: String?) =
+        attemptDao.updateAnnotations(attemptId, annotations)
 
     suspend fun deleteAttempt(attempt: Attempt) {
         deleteVideoFile(attempt.videoPath)

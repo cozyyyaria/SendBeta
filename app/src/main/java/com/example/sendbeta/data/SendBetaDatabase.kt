@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [Gym::class, Route::class, Attempt::class], version = 2, exportSchema = false)
+@Database(entities = [Gym::class, Route::class, Attempt::class], version = 3, exportSchema = false)
 abstract class SendBetaDatabase : RoomDatabase() {
 
     abstract fun gymDao(): GymDao

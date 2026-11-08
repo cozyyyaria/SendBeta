@@ -11,6 +11,8 @@ import android.graphics.RectF
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
+import com.example.sendbeta.analysis.Annotation
+import com.example.sendbeta.analysis.AnnotationType
 import com.example.sendbeta.analysis.NormPoint
 import com.google.mlkit.vision.pose.PoseLandmark
 
@@ -18,7 +20,8 @@ import com.google.mlkit.vision.pose.PoseLandmark
  * Draws the analysis on top of the video:
  *  - the climber's skeleton (from ML Kit pose detection)
  *  - the hip movement path across the clip
- *  - START / CRUX / TOP hold markers placed by the user
+ *  - annotation markers (Start, Crux, Finish, Foot, Rest, Heel hook, Dyno, Note) that
+ *    fade in around the moment they were placed and fade out afterwards
  *
  * Everything is stored as fractions of the video frame (NormPoint) and mapped into
  * [videoRect], the area where the VideoView actually shows the video, so the drawing
@@ -29,12 +32,6 @@ class BetaAnalyzerOverlayView @JvmOverloads constructor(
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
-
-    enum class Hold(val label: String, val color: Int) {
-        START("START", Color.parseColor("#1A7F55")),
-        CRUX("CRUX", Color.parseColor("#FF7F66")),
-        TOP("TOP", Color.parseColor("#EDAF27"))
-    }
 
     /** True until a video is loaded: shows a static design preview. */
     var demoMode = true
@@ -52,19 +49,19 @@ class BetaAnalyzerOverlayView @JvmOverloads constructor(
     var trajectory: List<NormPoint> = emptyList()
         set(value) { field = value; invalidate() }
 
-    /** Hold markers placed by the user. */
-    val holds = mutableMapOf<Hold, NormPoint>()
-
-    /** When set, the next tap on the video places this hold. */
-    var placingHold: Hold? = null
+    /** Markers placed by the user (each tied to a moment in the video). */
+    var annotations: List<Annotation> = emptyList()
         set(value) { field = value; invalidate() }
 
-    var onHoldPlaced: ((Hold, NormPoint) -> Unit)? = null
+    /** Current playback position; decides which markers are visible. */
+    var currentTimeMs: Long = 0L
+        set(value) { field = value; invalidate() }
 
-    fun setHold(hold: Hold, point: NormPoint?) {
-        if (point == null) holds.remove(hold) else holds[hold] = point
-        invalidate()
-    }
+    /** When set, the next tap on the video places a marker of this type. */
+    var placingType: AnnotationType? = null
+        set(value) { field = value; invalidate() }
+
+    var onPlaced: ((AnnotationType, NormPoint) -> Unit)? = null
 
     // ---------- Paints ----------
     private val limeColor = Color.parseColor("#D9FF52")
@@ -157,42 +154,52 @@ class BetaAnalyzerOverlayView @JvmOverloads constructor(
             }
         }
 
-        // 3. Hold markers
-        holds.forEach { (hold, p) -> drawHoldPin(canvas, r.px(p), r.py(p), hold) }
+        // 3. Markers: only around the moment they belong to (fade in / fade out)
+        annotations.forEach { a ->
+            val alpha = a.alphaAt(currentTimeMs)
+            if (alpha > 0.01f) drawPin(canvas, r.px(a.point), r.py(a.point), a.pinLabel(), a.type.color, alpha)
+        }
 
         // 4. Placement hint
-        placingHold?.let { hold ->
+        placingType?.let { type ->
             canvas.drawRect(r, dimPaint)
-            canvas.drawText("Tap the ${hold.label.lowercase()} hold", r.centerX(), r.top + 40f * density, hintPaint)
+            val what = if (type == AnnotationType.NOTE) "where the note goes" else "the ${type.label.lowercase()} spot"
+            canvas.drawText("Tap $what", r.centerX(), r.top + 40f * density, hintPaint)
         }
     }
 
-    /** Pin with a dot at the exact tapped point and a label above it. */
-    private fun drawHoldPin(canvas: Canvas, x: Float, y: Float, hold: Hold) {
-        pinBackgroundPaint.color = hold.color
-        canvas.drawCircle(x, y, 7f * density, pinBackgroundPaint)
-        canvas.drawCircle(x, y, 7f * density, jointOutlinePaint.apply { color = Color.WHITE })
-        jointOutlinePaint.color = inkColor
+    private val pinRingPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.WHITE; style = Paint.Style.STROKE; strokeWidth = 1.5f * density
+    }
 
-        val textWidth = pinTextPaint.measureText(hold.label)
+    /** Pin with a dot at the exact tapped point and a label above it. */
+    private fun drawPin(canvas: Canvas, x: Float, y: Float, label: String, color: Int, alpha: Float = 1f) {
+        val a = (alpha * 255).toInt().coerceIn(0, 255)
+        pinBackgroundPaint.color = color; pinBackgroundPaint.alpha = a
+        pinRingPaint.alpha = a
+        pinTextPaint.alpha = a
+        canvas.drawCircle(x, y, 7f * density, pinBackgroundPaint)
+        canvas.drawCircle(x, y, 7f * density, pinRingPaint)
+
+        val textWidth = pinTextPaint.measureText(label)
         val padH = 6f * density
         val rect = RectF(x - textWidth / 2 - padH, y - 30f * density, x + textWidth / 2 + padH, y - 13f * density)
         canvas.drawRoundRect(rect, 8f * density, 8f * density, pinBackgroundPaint)
-        canvas.drawText(hold.label, x, rect.bottom - 5f * density, pinTextPaint)
+        canvas.drawText(label, x, rect.bottom - 5f * density, pinTextPaint)
+        pinTextPaint.alpha = 255
     }
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouchEvent(event: MotionEvent): Boolean {
-        val hold = placingHold ?: return false // let taps fall through when not placing
+        val type = placingType ?: return false // let taps fall through when not placing
         val r = area()
         when (event.action) {
             MotionEvent.ACTION_DOWN -> return true
             MotionEvent.ACTION_UP -> {
                 if (!r.contains(event.x, event.y)) return true // must tap on the video itself
                 val p = NormPoint((event.x - r.left) / r.width(), (event.y - r.top) / r.height())
-                holds[hold] = p
-                placingHold = null
-                onHoldPlaced?.invoke(hold, p)
+                placingType = null
+                onPlaced?.invoke(type, p)
                 return true
             }
         }
@@ -224,8 +231,8 @@ class BetaAnalyzerOverlayView @JvmOverloads constructor(
             canvas.drawCircle(it.first, it.second, 4f * density, jointPaint)
             canvas.drawCircle(it.first, it.second, 4f * density, jointOutlinePaint)
         }
-        drawHoldPin(canvas, w * 0.36f, h * 0.82f, Hold.START)
-        drawHoldPin(canvas, w * 0.28f, h * 0.20f, Hold.CRUX)
-        drawHoldPin(canvas, w * 0.50f, h * 0.15f, Hold.TOP)
+        drawPin(canvas, w * 0.36f, h * 0.82f, "START", AnnotationType.START.color)
+        drawPin(canvas, w * 0.28f, h * 0.20f, "CRUX", AnnotationType.CRUX.color)
+        drawPin(canvas, w * 0.50f, h * 0.15f, "FINISH", AnnotationType.TOP.color)
     }
 }
