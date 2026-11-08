@@ -109,6 +109,45 @@
                     android:textColor="@color/white"
                     android:textSize="11sp"
                     app:drawableTint="@color/white" />
+
+                <!-- Big, obvious import option (center of the camera area) -->
+                <LinearLayout
+                    android:id="@+id/btn_import_center"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:background="@drawable/button_lime"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="20dp"
+                    android:paddingVertical="14dp">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_gallery"
+                        app:tint="@color/ink" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:text="Import a climbing video"
+                        android:textColor="@color/ink"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="64dp"
+                    android:text="or tap the red button to record"
+                    android:textColor="#B3FFFFFF"
+                    android:textSize="11sp" />
             </FrameLayout>
         </com.google.android.material.card.MaterialCardView>
 

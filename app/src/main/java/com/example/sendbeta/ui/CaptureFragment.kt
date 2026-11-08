@@ -87,10 +87,9 @@ class CaptureFragment : Fragment() {
             toast("Switch front/back camera inside the camera app")
         }
 
-        // Gallery button -> pick an existing climbing video
-        view.findViewById<View>(R.id.btn_gallery)?.setOnClickListener {
-            pickVideo.launch("video/*")
-        }
+        // Gallery button + big center button -> pick an existing climbing video
+        view.findViewById<View>(R.id.btn_gallery)?.setOnClickListener { pickVideo.launch("video/*") }
+        view.findViewById<View>(R.id.btn_import_center)?.setOnClickListener { pickVideo.launch("video/*") }
     }
 
     private fun launchCamera() {
