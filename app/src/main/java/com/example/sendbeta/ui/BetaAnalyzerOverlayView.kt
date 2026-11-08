@@ -1,5 +1,6 @@
 package com.example.sendbeta.ui
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -8,161 +9,223 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.RectF
 import android.util.AttributeSet
+import android.view.MotionEvent
 import android.view.View
+import com.example.sendbeta.analysis.NormPoint
+import com.google.mlkit.vision.pose.PoseLandmark
 
+/**
+ * Draws the analysis on top of the video:
+ *  - the climber's skeleton (from ML Kit pose detection)
+ *  - the hip movement path across the clip
+ *  - START / CRUX / TOP hold markers placed by the user
+ *
+ * Everything is stored as fractions of the video frame (NormPoint) and mapped into
+ * [videoRect], the area where the VideoView actually shows the video, so the drawing
+ * stays lined up with the climber at any screen size or aspect ratio.
+ */
 class BetaAnalyzerOverlayView @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet? = null,
     defStyleAttr: Int = 0
 ) : View(context, attrs, defStyleAttr) {
 
-    var showSkeleton: Boolean = true
-        set(value) {
-            field = value
-            invalidate()
-        }
+    enum class Hold(val label: String, val color: Int) {
+        START("START", Color.parseColor("#1A7F55")),
+        CRUX("CRUX", Color.parseColor("#FF7F66")),
+        TOP("TOP", Color.parseColor("#EDAF27"))
+    }
 
-    var showTrajectory: Boolean = true
-        set(value) {
-            field = value
-            invalidate()
-        }
+    /** True until a video is loaded: shows a static design preview. */
+    var demoMode = true
+        set(value) { field = value; invalidate() }
 
-    // Colors
+    /** Where the video is drawn inside this view (set from the VideoView's bounds). */
+    var videoRect: RectF? = null
+        set(value) { field = value; invalidate() }
+
+    /** Landmarks for the frame on screen (null = no climber found). */
+    var pose: Map<Int, NormPoint>? = null
+        set(value) { field = value; invalidate() }
+
+    /** Hip-centre path across the whole clip. */
+    var trajectory: List<NormPoint> = emptyList()
+        set(value) { field = value; invalidate() }
+
+    /** Hold markers placed by the user. */
+    val holds = mutableMapOf<Hold, NormPoint>()
+
+    /** When set, the next tap on the video places this hold. */
+    var placingHold: Hold? = null
+        set(value) { field = value; invalidate() }
+
+    var onHoldPlaced: ((Hold, NormPoint) -> Unit)? = null
+
+    fun setHold(hold: Hold, point: NormPoint?) {
+        if (point == null) holds.remove(hold) else holds[hold] = point
+        invalidate()
+    }
+
+    // ---------- Paints ----------
     private val limeColor = Color.parseColor("#D9FF52")
-    private val coralColor = Color.parseColor("#FF7F66")
-    private val greenColor = Color.parseColor("#1A7F55")
-    private val goldColor = Color.parseColor("#EDAF27")
     private val inkColor = Color.parseColor("#18201D")
+    private val goldColor = Color.parseColor("#EDAF27")
+    private val density = resources.displayMetrics.density
 
+    private val jointPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = limeColor; style = Paint.Style.FILL }
+    private val jointOutlinePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = inkColor; style = Paint.Style.STROKE; strokeWidth = 1.5f * density
+    }
+    private val bonePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.argb(220, 255, 255, 255); style = Paint.Style.STROKE
+        strokeWidth = 2.5f * density; strokeCap = Paint.Cap.ROUND
+    }
+    private val trajectoryPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = goldColor; style = Paint.Style.STROKE; strokeWidth = 3f * density
+        pathEffect = DashPathEffect(floatArrayOf(6f * density, 5f * density), 0f)
+        strokeJoin = Paint.Join.ROUND
+    }
+    private val pinBackgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.FILL }
+    private val pinTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.WHITE; textSize = 10f * density; isFakeBoldText = true; textAlign = Paint.Align.CENTER
+    }
+    private val dimPaint = Paint().apply { color = Color.argb(90, 0, 0, 0) }
+    private val hintPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+        color = Color.WHITE; textSize = 13f * density; isFakeBoldText = true; textAlign = Paint.Align.CENTER
+    }
     private val trajectoryPath = Path()
 
-    // Paints
-    private val jointPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = limeColor
-        style = Paint.Style.FILL
-    }
+    // ML Kit landmark connections that make up the skeleton
+    private val bones = listOf(
+        PoseLandmark.LEFT_SHOULDER to PoseLandmark.RIGHT_SHOULDER,
+        PoseLandmark.LEFT_SHOULDER to PoseLandmark.LEFT_ELBOW,
+        PoseLandmark.LEFT_ELBOW to PoseLandmark.LEFT_WRIST,
+        PoseLandmark.RIGHT_SHOULDER to PoseLandmark.RIGHT_ELBOW,
+        PoseLandmark.RIGHT_ELBOW to PoseLandmark.RIGHT_WRIST,
+        PoseLandmark.LEFT_SHOULDER to PoseLandmark.LEFT_HIP,
+        PoseLandmark.RIGHT_SHOULDER to PoseLandmark.RIGHT_HIP,
+        PoseLandmark.LEFT_HIP to PoseLandmark.RIGHT_HIP,
+        PoseLandmark.LEFT_HIP to PoseLandmark.LEFT_KNEE,
+        PoseLandmark.LEFT_KNEE to PoseLandmark.LEFT_ANKLE,
+        PoseLandmark.RIGHT_HIP to PoseLandmark.RIGHT_KNEE,
+        PoseLandmark.RIGHT_KNEE to PoseLandmark.RIGHT_ANKLE,
+        PoseLandmark.LEFT_WRIST to PoseLandmark.LEFT_INDEX,
+        PoseLandmark.RIGHT_WRIST to PoseLandmark.RIGHT_INDEX,
+        PoseLandmark.LEFT_ANKLE to PoseLandmark.LEFT_FOOT_INDEX,
+        PoseLandmark.RIGHT_ANKLE to PoseLandmark.RIGHT_FOOT_INDEX
+    )
+    private val joints = listOf(
+        PoseLandmark.NOSE, PoseLandmark.LEFT_SHOULDER, PoseLandmark.RIGHT_SHOULDER,
+        PoseLandmark.LEFT_ELBOW, PoseLandmark.RIGHT_ELBOW, PoseLandmark.LEFT_WRIST, PoseLandmark.RIGHT_WRIST,
+        PoseLandmark.LEFT_HIP, PoseLandmark.RIGHT_HIP, PoseLandmark.LEFT_KNEE, PoseLandmark.RIGHT_KNEE,
+        PoseLandmark.LEFT_ANKLE, PoseLandmark.RIGHT_ANKLE
+    )
 
-    private val jointOutlinePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = inkColor
-        style = Paint.Style.STROKE
-        strokeWidth = 4f
-    }
+    private fun area(): RectF = videoRect?.takeIf { it.width() > 0 && it.height() > 0 }
+        ?: RectF(0f, 0f, width.toFloat(), height.toFloat())
 
-    private val bonePaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.argb(200, 255, 255, 255)
-        style = Paint.Style.STROKE
-        strokeWidth = 6f
-    }
-
-    private val trajectoryPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = goldColor
-        style = Paint.Style.STROKE
-        strokeWidth = 8f
-        pathEffect = DashPathEffect(floatArrayOf(16f, 12f), 0f)
-    }
-
-    private val pinBackgroundPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.FILL
-    }
-
-    private val pinTextPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        color = Color.WHITE
-        textSize = 28f
-        isFakeBoldText = true
-        textAlign = Paint.Align.CENTER
-    }
+    private fun RectF.px(p: NormPoint) = left + p.x * width()
+    private fun RectF.py(p: NormPoint) = top + p.y * height()
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
+        if (width == 0 || height == 0) return
+        if (demoMode) { drawDemo(canvas); return }
 
-        val w = width.toFloat()
-        val h = height.toFloat()
-        if (w == 0f || h == 0f) return
+        val r = area()
 
-        // 1. Draw Trajectory Path (Hip Center-of-Mass movement)
-        if (showTrajectory) {
+        // 1. Hip movement path across the clip
+        if (trajectory.size >= 2) {
             trajectoryPath.reset()
-            trajectoryPath.moveTo(w * 0.42f, h * 0.78f)
-            trajectoryPath.cubicTo(
-                w * 0.46f, h * 0.65f,
-                w * 0.38f, h * 0.52f,
-                w * 0.48f, h * 0.42f
-            )
-            trajectoryPath.cubicTo(
-                w * 0.52f, h * 0.35f,
-                w * 0.44f, h * 0.28f,
-                w * 0.50f, h * 0.22f
-            )
+            trajectoryPath.moveTo(r.px(trajectory[0]), r.py(trajectory[0]))
+            trajectory.drop(1).forEach { trajectoryPath.lineTo(r.px(it), r.py(it)) }
             canvas.drawPath(trajectoryPath, trajectoryPaint)
         }
 
-        // 2. Draw Pose Skeleton (33 ML Kit Keypoints mock skeleton)
-        if (showSkeleton) {
-            // Skeleton joint coordinates (normalized)
-            val head = Pair(w * 0.48f, h * 0.32f)
-            val neck = Pair(w * 0.48f, h * 0.37f)
-            val leftShoulder = Pair(w * 0.40f, h * 0.38f)
-            val rightShoulder = Pair(w * 0.56f, h * 0.38f)
-            val leftElbow = Pair(w * 0.32f, h * 0.28f)
-            val rightElbow = Pair(w * 0.62f, h * 0.30f)
-            val leftWrist = Pair(w * 0.28f, h * 0.20f) // Reaching start/crux hold
-            val rightWrist = Pair(w * 0.68f, h * 0.20f)
-            val hipCenter = Pair(w * 0.48f, h * 0.52f)
-            val leftHip = Pair(w * 0.43f, h * 0.52f)
-            val rightHip = Pair(w * 0.53f, h * 0.52f)
-            val leftKnee = Pair(w * 0.38f, h * 0.66f)
-            val rightKnee = Pair(w * 0.58f, h * 0.64f)
-            val leftAnkle = Pair(w * 0.36f, h * 0.80f)
-            val rightAnkle = Pair(w * 0.60f, h * 0.78f)
-
-            // Draw Bones (Lines)
-            val bones = listOf(
-                Pair(head, neck),
-                Pair(neck, leftShoulder), Pair(neck, rightShoulder),
-                Pair(leftShoulder, leftElbow), Pair(leftElbow, leftWrist),
-                Pair(rightShoulder, rightElbow), Pair(rightElbow, rightWrist),
-                Pair(leftShoulder, leftHip), Pair(rightShoulder, rightHip),
-                Pair(leftHip, rightHip),
-                Pair(leftHip, leftKnee), Pair(leftKnee, leftAnkle),
-                Pair(rightHip, rightKnee), Pair(rightKnee, rightAnkle)
-            )
-
-            for ((p1, p2) in bones) {
-                canvas.drawLine(p1.first, p1.second, p2.first, p2.second, bonePaint)
+        // 2. Skeleton for the current frame
+        pose?.let { lm ->
+            bones.forEach { (a, b) ->
+                val p1 = lm[a]; val p2 = lm[b]
+                if (p1 != null && p2 != null) canvas.drawLine(r.px(p1), r.py(p1), r.px(p2), r.py(p2), bonePaint)
             }
-
-            // Draw Joints (Circles)
-            val joints = listOf(
-                head, neck, leftShoulder, rightShoulder, leftElbow, rightElbow,
-                leftWrist, rightWrist, hipCenter, leftHip, rightHip,
-                leftKnee, rightKnee, leftAnkle, rightAnkle
-            )
-
-            for (j in joints) {
-                canvas.drawCircle(j.first, j.second, 12f, jointPaint)
-                canvas.drawCircle(j.first, j.second, 12f, jointOutlinePaint)
+            val radius = 4f * density
+            joints.forEach { j ->
+                lm[j]?.let {
+                    canvas.drawCircle(r.px(it), r.py(it), radius, jointPaint)
+                    canvas.drawCircle(r.px(it), r.py(it), radius, jointOutlinePaint)
+                }
             }
         }
 
-        // 3. Draw Hold Pins / Markers
-        drawHoldPin(canvas, w * 0.36f, h * 0.82f, "START", greenColor)
-        drawHoldPin(canvas, w * 0.28f, h * 0.20f, "CRUX", coralColor)
-        drawHoldPin(canvas, w * 0.50f, h * 0.15f, "TOP", goldColor)
+        // 3. Hold markers
+        holds.forEach { (hold, p) -> drawHoldPin(canvas, r.px(p), r.py(p), hold) }
+
+        // 4. Placement hint
+        placingHold?.let { hold ->
+            canvas.drawRect(r, dimPaint)
+            canvas.drawText("Tap the ${hold.label.lowercase()} hold", r.centerX(), r.top + 40f * density, hintPaint)
+        }
     }
 
-    private fun drawHoldPin(canvas: Canvas, x: Float, y: Float, label: String, color: Int) {
-        val paddingH = 20f
-        val textWidth = pinTextPaint.measureText(label)
-        val rectLeft = x - textWidth / 2f - paddingH
-        val rectTop = y - 20f
-        val rectRight = x + textWidth / 2f + paddingH
-        val rectBottom = y + 20f
+    /** Pin with a dot at the exact tapped point and a label above it. */
+    private fun drawHoldPin(canvas: Canvas, x: Float, y: Float, hold: Hold) {
+        pinBackgroundPaint.color = hold.color
+        canvas.drawCircle(x, y, 7f * density, pinBackgroundPaint)
+        canvas.drawCircle(x, y, 7f * density, jointOutlinePaint.apply { color = Color.WHITE })
+        jointOutlinePaint.color = inkColor
 
-        pinBackgroundPaint.color = color
-        val rect = RectF(rectLeft, rectTop, rectRight, rectBottom)
-        canvas.drawRoundRect(rect, 20f, 20f, pinBackgroundPaint)
+        val textWidth = pinTextPaint.measureText(hold.label)
+        val padH = 6f * density
+        val rect = RectF(x - textWidth / 2 - padH, y - 30f * density, x + textWidth / 2 + padH, y - 13f * density)
+        canvas.drawRoundRect(rect, 8f * density, 8f * density, pinBackgroundPaint)
+        canvas.drawText(hold.label, x, rect.bottom - 5f * density, pinTextPaint)
+    }
 
-        canvas.drawText(label, x, y + 8f, pinTextPaint)
+    @SuppressLint("ClickableViewAccessibility")
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        val hold = placingHold ?: return false // let taps fall through when not placing
+        val r = area()
+        when (event.action) {
+            MotionEvent.ACTION_DOWN -> return true
+            MotionEvent.ACTION_UP -> {
+                if (!r.contains(event.x, event.y)) return true // must tap on the video itself
+                val p = NormPoint((event.x - r.left) / r.width(), (event.y - r.top) / r.height())
+                holds[hold] = p
+                placingHold = null
+                onHoldPlaced?.invoke(hold, p)
+                return true
+            }
+        }
+        return true
+    }
+
+    // ---------- Static design preview (no video loaded) ----------
+    private fun drawDemo(canvas: Canvas) {
+        val w = width.toFloat(); val h = height.toFloat()
+        trajectoryPath.reset()
+        trajectoryPath.moveTo(w * 0.42f, h * 0.78f)
+        trajectoryPath.cubicTo(w * 0.46f, h * 0.65f, w * 0.38f, h * 0.52f, w * 0.48f, h * 0.42f)
+        trajectoryPath.cubicTo(w * 0.52f, h * 0.35f, w * 0.44f, h * 0.28f, w * 0.50f, h * 0.22f)
+        canvas.drawPath(trajectoryPath, trajectoryPaint)
+
+        val pts = mapOf(
+            "head" to (0.48f to 0.32f), "neck" to (0.48f to 0.37f),
+            "ls" to (0.40f to 0.38f), "rs" to (0.56f to 0.38f), "le" to (0.32f to 0.28f), "re" to (0.62f to 0.30f),
+            "lw" to (0.28f to 0.20f), "rw" to (0.68f to 0.20f), "lh" to (0.43f to 0.52f), "rh" to (0.53f to 0.52f),
+            "lk" to (0.38f to 0.66f), "rk" to (0.58f to 0.64f), "la" to (0.36f to 0.80f), "ra" to (0.60f to 0.78f)
+        ).mapValues { (_, v) -> (v.first * w) to (v.second * h) }
+        listOf("head" to "neck", "neck" to "ls", "neck" to "rs", "ls" to "le", "le" to "lw", "rs" to "re",
+            "re" to "rw", "ls" to "lh", "rs" to "rh", "lh" to "rh", "lh" to "lk", "lk" to "la", "rh" to "rk", "rk" to "ra")
+            .forEach { (a, b) ->
+                val p1 = pts.getValue(a); val p2 = pts.getValue(b)
+                canvas.drawLine(p1.first, p1.second, p2.first, p2.second, bonePaint)
+            }
+        pts.values.forEach {
+            canvas.drawCircle(it.first, it.second, 4f * density, jointPaint)
+            canvas.drawCircle(it.first, it.second, 4f * density, jointOutlinePaint)
+        }
+        drawHoldPin(canvas, w * 0.36f, h * 0.82f, Hold.START)
+        drawHoldPin(canvas, w * 0.28f, h * 0.20f, Hold.CRUX)
+        drawHoldPin(canvas, w * 0.50f, h * 0.15f, Hold.TOP)
     }
 }
