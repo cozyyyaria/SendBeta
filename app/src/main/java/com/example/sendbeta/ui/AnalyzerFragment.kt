@@ -21,8 +21,16 @@ import android.widget.VideoView
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import android.graphics.RectF
+import android.widget.LinearLayout
+import androidx.core.content.ContextCompat
 import com.example.sendbeta.R
+import com.example.sendbeta.analysis.ClipAnalysis
+import com.example.sendbeta.analysis.NormPoint
+import com.example.sendbeta.analysis.PoseAnalyzer
 import com.example.sendbeta.data.SendBetaRepository
+import com.example.sendbeta.ui.BetaAnalyzerOverlayView.Hold
+import kotlinx.coroutines.Job
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.textfield.TextInputEditText
 import kotlinx.coroutines.launch
@@ -78,6 +86,14 @@ class AnalyzerFragment : Fragment() {
     private var durationMs = 0L
     private var savedAttemptId: Long? = null   // non-null = already in the database
 
+    // Pose analysis (Google ML Kit) + annotations
+    private var overlay: BetaAnalyzerOverlayView? = null
+    private var poseAnalyzer: PoseAnalyzer? = null
+    private var clipAnalysis: ClipAnalysis? = null
+    private var analysisJob: Job? = null
+    private var frameJob: Job? = null
+    private var holdsChanged = false
+
     private val progressHandler = Handler(Looper.getMainLooper())
     private val progressUpdater = object : Runnable {
         override fun run() {
@@ -85,6 +101,8 @@ class AnalyzerFragment : Fragment() {
             if (hasVideo) {
                 view?.findViewById<SeekBar>(R.id.scrub_bar)?.progress = vv.currentPosition
                 view?.findViewById<TextView>(R.id.time_current)?.text = formatTime(vv.currentPosition)
+                // While playing, show the closest analysed frame's skeleton
+                clipAnalysis?.frameAt(vv.currentPosition.toLong())?.let { overlay?.pose = it.landmarks }
             }
             progressHandler.postDelayed(this, 200)
         }
@@ -110,6 +128,24 @@ class AnalyzerFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         videoView = view.findViewById(R.id.video_view)
+        overlay = view.findViewById(R.id.overlay_canvas)
+        poseAnalyzer = PoseAnalyzer(requireContext().applicationContext)
+
+        // Keep the overlay lined up with the area where the video is actually shown
+        videoView?.addOnLayoutChangeListener { v, l, t, r, b, _, _, _, _ ->
+            if (v.visibility == View.VISIBLE) overlay?.videoRect = RectF(l.toFloat(), t.toFloat(), r.toFloat(), b.toFloat())
+        }
+
+        // Annotation tools: tap a hold type, then tap the hold on the paused video
+        setUpHoldRow(view, R.id.row_start, Hold.START)
+        setUpHoldRow(view, R.id.row_crux, Hold.CRUX)
+        setUpHoldRow(view, R.id.row_top, Hold.TOP)
+        overlay?.onHoldPlaced = { hold, _ ->
+            holdsChanged = true
+            view.findViewById<View>(R.id.btn_play_center)?.visibility = View.VISIBLE
+            updateHoldRow(hold)
+            Toast.makeText(context, "${hold.label.lowercase().replaceFirstChar { it.uppercase() }} hold placed", Toast.LENGTH_SHORT).show()
+        }
 
         view.findViewById<ImageButton>(R.id.btn_back)?.setOnClickListener {
             parentFragmentManager.popBackStack()
@@ -117,7 +153,20 @@ class AnalyzerFragment : Fragment() {
 
         // Done: save a new attempt to the database (or just close a saved one)
         view.findViewById<ImageButton>(R.id.btn_done)?.setOnClickListener {
-            if (savedAttemptId != null) parentFragmentManager.popBackStack() else showSaveDialog()
+            val id = savedAttemptId
+            if (id == null) {
+                showSaveDialog()
+            } else if (holdsChanged) {
+                val holds = overlay?.holds.orEmpty()
+                val appContext = requireContext().applicationContext
+                viewLifecycleOwner.lifecycleScope.launch {
+                    repo.updateHolds(id, holds[Hold.START]?.serialize(), holds[Hold.CRUX]?.serialize(), holds[Hold.TOP]?.serialize())
+                    Toast.makeText(appContext, "Annotations saved", Toast.LENGTH_SHORT).show()
+                    parentFragmentManager.popBackStack()
+                }
+            } else {
+                parentFragmentManager.popBackStack()
+            }
         }
 
         view.findViewById<TextView>(R.id.btn_import_video)?.setOnClickListener {
@@ -148,7 +197,9 @@ class AnalyzerFragment : Fragment() {
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
+            override fun onStopTrackingTouch(seekBar: SeekBar?) {
+                if (hasVideo && !isPlaying) analyzeCurrentFrame()
+            }
         })
 
         val args = arguments
@@ -162,6 +213,14 @@ class AnalyzerFragment : Fragment() {
                     val result = if (a.sent) "Sent" else "Fell"
                     view.findViewById<TextView>(R.id.analyzer_subtitle)?.text =
                         "$result · ${RouteUi.shortDate(a.createdAt)} · ${RouteUi.seconds(a.durationMs)}"
+                    overlay?.setHold(Hold.START, NormPoint.parse(a.startHold))
+                    overlay?.setHold(Hold.CRUX, NormPoint.parse(a.cruxHold))
+                    overlay?.setHold(Hold.TOP, NormPoint.parse(a.topHold))
+                    Hold.values().forEach { updateHoldRow(it) }
+                    if (a.videoPath == null) {
+                        view.findViewById<TextView>(R.id.analysis_summary)?.text =
+                            "This attempt was logged without a video. Import one to analyse it."
+                    }
                 }
             }
             args?.getString(ARG_VIDEO_URI)?.let { loadVideo(Uri.parse(it), null) }
@@ -183,6 +242,9 @@ class AnalyzerFragment : Fragment() {
 
         v.findViewById<View>(R.id.video_placeholder)?.visibility = View.GONE
         vv.visibility = View.VISIBLE
+        analysisJob?.cancel()
+        clipAnalysis = null
+        overlay?.apply { demoMode = false; pose = null; trajectory = emptyList() }
         if (source != null) {
             v.findViewById<TextView>(R.id.analyzer_title)?.text = "My Beta"
             val time = SimpleDateFormat("h:mm a", Locale.getDefault()).format(Date())
@@ -201,6 +263,7 @@ class AnalyzerFragment : Fragment() {
             v.findViewById<TextView>(R.id.time_total)?.text = formatTime(duration)
             v.findViewById<TextView>(R.id.time_current)?.text = formatTime(0)
             vv.seekTo(if (resumePosition > 0) resumePosition else 1) // show the first frame
+            if (clipAnalysis == null && analysisJob?.isActive != true) runPoseAnalysis(uri, durationMs)
         }
         vv.setOnErrorListener { _, _, _ ->
             Toast.makeText(context, "Couldn't play this video. Try an .mp4 file.", Toast.LENGTH_LONG).show()
@@ -258,10 +321,101 @@ class AnalyzerFragment : Fragment() {
                 note = note,
                 durationMs = durationMs,
                 videoUri = currentVideoUri,
-                source = if (currentVideoUri != null) currentSource else "Logged"
+                source = if (currentVideoUri != null) currentSource else "Logged",
+                startHold = overlay?.holds?.get(Hold.START)?.serialize(),
+                cruxHold = overlay?.holds?.get(Hold.CRUX)?.serialize(),
+                topHold = overlay?.holds?.get(Hold.TOP)?.serialize()
             )
             Toast.makeText(appContext, "Attempt saved to $routeName", Toast.LENGTH_SHORT).show()
             parentFragmentManager.popBackStack()
+        }
+    }
+
+    // ---------- Pose analysis ----------
+
+    /** Runs ML Kit pose detection over the clip, then draws the hip path + skeleton. */
+    private fun runPoseAnalysis(uri: Uri, duration: Long) {
+        val v = view ?: return
+        val analyzer = poseAnalyzer ?: return
+        val badge = v.findViewById<TextView>(R.id.pose_badge)
+        val summary = v.findViewById<TextView>(R.id.analysis_summary)
+        badge?.text = "Analyzing pose… 0%"
+        summary?.text = "Detecting the climber's body in each frame…"
+
+        analysisJob = viewLifecycleOwner.lifecycleScope.launch {
+            try {
+                analyzer.open(uri)
+                val result = analyzer.analyzeClip(duration) { pct -> badge?.text = "Analyzing pose… $pct%" }
+                clipAnalysis = result
+                overlay?.trajectory = result.hipPath
+                overlay?.pose = result.frameAt(videoView?.currentPosition?.toLong() ?: 0L)?.landmarks
+                badge?.text = if (result.frames.isEmpty()) "No climber detected"
+                else "Pose tracked · ${result.frames.size}/${result.sampledFrames} frames"
+                summary?.text = result.summary(duration)
+            } catch (e: Exception) {
+                badge?.text = "Pose analysis unavailable"
+                summary?.text = "Couldn't analyse this video (${e.javaClass.simpleName}). Playback and hold marking still work."
+            }
+        }
+    }
+
+    /** Precise skeleton for the exact paused frame. */
+    private fun analyzeCurrentFrame() {
+        val analyzer = poseAnalyzer ?: return
+        if (clipAnalysis == null) return // clip pass still running; it will draw when done
+        val position = videoView?.currentPosition?.toLong() ?: return
+        frameJob?.cancel()
+        frameJob = viewLifecycleOwner.lifecycleScope.launch {
+            val frame = analyzer.analyzeFrame(position)
+            overlay?.pose = frame?.landmarks
+        }
+    }
+
+    // ---------- Hold annotations ----------
+
+    private fun setUpHoldRow(view: View, rowId: Int, hold: Hold) {
+        view.findViewById<LinearLayout>(rowId)?.setOnClickListener {
+            if (!hasVideo) {
+                Toast.makeText(context, "Import a video first, then mark the holds on it", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            val o = overlay ?: return@setOnClickListener
+            val playButton = view.findViewById<View>(R.id.btn_play_center)
+            if (o.placingHold == hold) { // tap again = cancel
+                o.placingHold = null
+                playButton?.visibility = View.VISIBLE
+                return@setOnClickListener
+            }
+            if (isPlaying) togglePlay() // holds are placed on a paused frame
+            o.placingHold = hold
+            playButton?.visibility = View.GONE // so the whole video can be tapped
+            // scroll up so the video is visible while placing
+            (view as? android.widget.ScrollView)?.smoothScrollTo(0, 0)
+        }
+        // Long-press removes a placed hold
+        view.findViewById<LinearLayout>(rowId)?.setOnLongClickListener {
+            if (overlay?.holds?.containsKey(hold) == true) {
+                overlay?.setHold(hold, null)
+                holdsChanged = true
+                updateHoldRow(hold)
+                Toast.makeText(context, "${hold.label.lowercase()} hold removed", Toast.LENGTH_SHORT).show()
+            }
+            true
+        }
+    }
+
+    private fun updateHoldRow(hold: Hold) {
+        val v = view ?: return
+        val (subId, iconId, defaultText) = when (hold) {
+            Hold.START -> Triple(R.id.sub_start, R.id.icon_start, "Opening position")
+            Hold.CRUX -> Triple(R.id.sub_crux, R.id.icon_crux, "Hardest move")
+            Hold.TOP -> Triple(R.id.sub_top, R.id.icon_top, "Finish position")
+        }
+        val placed = overlay?.holds?.containsKey(hold) == true
+        v.findViewById<TextView>(subId)?.text = if (placed) "Placed ✓ · tap to move, hold to remove" else defaultText
+        v.findViewById<ImageView>(iconId)?.apply {
+            setImageResource(if (placed) R.drawable.ic_check else R.drawable.ic_plus)
+            setColorFilter(ContextCompat.getColor(requireContext(), if (placed) R.color.green else R.color.muted))
         }
     }
 
@@ -274,6 +428,7 @@ class AnalyzerFragment : Fragment() {
         if (isPlaying) {
             vv.pause()
             setPlaying(false)
+            analyzeCurrentFrame()
         } else {
             vv.start()
             applySpeed()
@@ -322,5 +477,10 @@ class AnalyzerFragment : Fragment() {
         videoView?.stopPlayback()
         videoView = null
         mediaPlayer = null
+        analysisJob?.cancel()
+        frameJob?.cancel()
+        poseAnalyzer?.close()
+        poseAnalyzer = null
+        overlay = null
     }
 }

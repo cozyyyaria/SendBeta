@@ -129,6 +129,7 @@
                     android:fontFamily="monospace"
                     android:paddingHorizontal="10dp"
                     android:paddingVertical="6dp"
+                    android:id="@+id/pose_badge"
                     android:text="Pose tracking active"
                     android:textColor="@color/ink"
                     android:textSize="10sp"
@@ -290,8 +291,25 @@
                     android:textColor="@color/muted"
                     android:textSize="12sp" />
 
+                <!-- Pose analysis results -->
+                <TextView
+                    android:id="@+id/analysis_summary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="@drawable/stat_badge"
+                    android:padding="10dp"
+                    android:text="Import a video to run pose analysis."
+                    android:textColor="@color/ink"
+                    android:textSize="12sp" />
+
                 <!-- Hold Type 1: Start Hold -->
                 <LinearLayout
+                    android:id="@+id/row_start"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:paddingVertical="4dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="18dp"
@@ -327,6 +345,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:id="@+id/sub_start"
                             android:text="Opening position"
                             android:textColor="@color/muted"
                             android:textSize="11sp" />
@@ -335,6 +354,7 @@
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
+                        android:id="@+id/icon_start"
                         android:src="@drawable/ic_plus"
                         app:tint="@color/muted" />
                 </LinearLayout>
@@ -348,6 +368,11 @@
 
                 <!-- Hold Type 2: Crux Hold -->
                 <LinearLayout
+                    android:id="@+id/row_crux"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:paddingVertical="4dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
@@ -382,6 +407,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:id="@+id/sub_crux"
                             android:text="Hardest move"
                             android:textColor="@color/muted"
                             android:textSize="11sp" />
@@ -390,6 +416,7 @@
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
+                        android:id="@+id/icon_crux"
                         android:src="@drawable/ic_plus"
                         app:tint="@color/muted" />
                 </LinearLayout>
@@ -403,6 +430,11 @@
 
                 <!-- Hold Type 3: Top Hold -->
                 <LinearLayout
+                    android:id="@+id/row_top"
+                    android:background="?attr/selectableItemBackground"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:paddingVertical="4dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center_vertical"
@@ -437,6 +469,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:id="@+id/sub_top"
                             android:text="Finish position"
                             android:textColor="@color/muted"
                             android:textSize="11sp" />
@@ -445,6 +478,7 @@
                     <ImageView
                         android:layout_width="24dp"
                         android:layout_height="24dp"
+                        android:id="@+id/icon_top"
                         android:src="@drawable/ic_plus"
                         app:tint="@color/muted" />
                 </LinearLayout>
