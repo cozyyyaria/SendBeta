@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout 
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
@@ -12,7 +12,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="18dp"
+        android:paddingHorizontal="18dp"
+        android:paddingTop="18dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
@@ -36,6 +37,7 @@
             android:textSize="27sp" />
 
         <TextView
+            android:id="@+id/map_subtitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
@@ -44,96 +46,48 @@
             android:textSize="12sp" />
     </LinearLayout>
 
+    <!-- Gym chips: tap one to jump to it on the map (filled in from code) -->
+    <HorizontalScrollView
+        android:id="@+id/gym_chips_scroll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:clipToPadding="false"
+        android:paddingHorizontal="18dp"
+        android:scrollbars="none"
+        app:layout_constraintTop_toBottomOf="@id/header">
+
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/gym_chips"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:selectionRequired="true"
+            app:singleLine="true"
+            app:singleSelection="true" />
+    </HorizontalScrollView>
+
     <!-- Map Area -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/map_card"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginHorizontal="18dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="8dp"
         app:cardBackgroundColor="@color/line"
         app:cardCornerRadius="18dp"
         app:cardElevation="0dp"
         app:layout_constraintBottom_toTopOf="@id/gym_info_card"
-        app:layout_constraintTop_toBottomOf="@id/header">
+        app:layout_constraintTop_toBottomOf="@id/gym_chips_scroll">
 
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <!-- Map placeholder background -->
-            <View
+            <!-- Real OpenStreetMap map (osmdroid) -->
+            <org.osmdroid.views.MapView
+                android:id="@+id/map_view"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@drawable/map_placeholder" />
-
-            <!-- Gym Marker 1 (Selected - Lime) -->
-            <FrameLayout
-                android:id="@+id/gym_marker_1"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:layout_gravity="center"
-                android:layout_marginTop="-30dp"
-                android:layout_marginStart="-60dp"
-                android:background="@drawable/marker_lime">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="1"
-                    android:textColor="@color/ink"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-            </FrameLayout>
-
-            <!-- Gym Marker 2 -->
-            <FrameLayout
-                android:id="@+id/gym_marker_2"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_gravity="center"
-                android:layout_marginTop="-80dp"
-                android:layout_marginStart="40dp"
-                android:background="@drawable/marker_dark">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="2"
-                    android:textColor="@color/white"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-            </FrameLayout>
-
-            <!-- Gym Marker 3 -->
-            <FrameLayout
-                android:id="@+id/gym_marker_3"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_gravity="center"
-                android:layout_marginTop="80dp"
-                android:layout_marginStart="80dp"
-                android:background="@drawable/marker_dark">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="3"
-                    android:textColor="@color/white"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-            </FrameLayout>
-
-            <!-- User location dot -->
-            <View
-                android:layout_width="14dp"
-                android:layout_height="14dp"
-                android:layout_gravity="center"
-                android:layout_marginTop="20dp"
-                android:background="@drawable/user_location_dot" />
+                android:layout_height="match_parent" />
 
             <!-- Map Controls -->
             <LinearLayout
@@ -142,10 +96,12 @@
                 android:layout_gravity="end|center_vertical"
                 android:layout_marginEnd="12dp"
                 android:background="@drawable/map_controls_background"
+                android:elevation="2dp"
                 android:orientation="vertical"
                 android:padding="4dp">
 
                 <ImageButton
+                    android:id="@+id/btn_zoom_in"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
                     android:background="@android:color/transparent"
@@ -159,6 +115,7 @@
                     android:background="@color/line" />
 
                 <ImageButton
+                    android:id="@+id/btn_zoom_out"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
                     android:background="@android:color/transparent"
@@ -172,6 +129,7 @@
                     android:background="@color/line" />
 
                 <ImageButton
+                    android:id="@+id/btn_my_location"
                     android:layout_width="36dp"
                     android:layout_height="36dp"
                     android:background="@android:color/transparent"
@@ -179,6 +137,18 @@
                     android:src="@drawable/ic_my_location"
                     app:tint="@color/ink" />
             </LinearLayout>
+
+            <!-- Required OpenStreetMap credit -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|start"
+                android:layout_margin="6dp"
+                android:background="#CCFFFFFF"
+                android:paddingHorizontal="4dp"
+                android:text="© OpenStreetMap contributors"
+                android:textColor="@color/muted"
+                android:textSize="9sp" />
         </FrameLayout>
     </com.google.android.material.card.MaterialCardView>
 
@@ -188,20 +158,20 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="18dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="12dp"
         android:layout_marginBottom="16dp"
         app:cardBackgroundColor="@color/white"
         app:cardCornerRadius="18dp"
         app:cardElevation="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:strokeColor="@color/line"
-        app:strokeWidth="1dp"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:strokeWidth="1dp">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="20dp">
+            android:padding="18dp">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -251,7 +221,7 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="14dp"
                 android:orientation="horizontal">
 
                 <LinearLayout
@@ -270,9 +240,10 @@
                         android:textSize="16sp" />
 
                     <TextView
+                        android:id="@+id/gym_distance_label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="away"
+                        android:text="from downtown"
                         android:textColor="@color/muted"
                         android:textSize="11sp" />
                 </LinearLayout>
@@ -293,6 +264,7 @@
                         android:textSize="16sp" />
 
                     <TextView
+                        android:id="@+id/gym_hours_label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="until 11 PM"
@@ -306,7 +278,7 @@
                 android:id="@+id/btn_directions"
                 android:layout_width="match_parent"
                 android:layout_height="52dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="16dp"
                 android:background="@drawable/button_lime"
                 android:drawableStart="@drawable/ic_arrow_forward"
                 android:drawablePadding="8dp"
