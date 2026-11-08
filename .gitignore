@@ -1,0 +1,22 @@
+# Gradle / build output
+.gradle/
+build/
+app/build/
+
+# Local machine config (contains your SDK path)
+local.properties
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+
+# OS files
+.DS_Store
+
+# Misc
+captures/
+.externalNativeBuild/
+.cxx/
+*.apk
+*.aab
