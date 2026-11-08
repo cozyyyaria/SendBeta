@@ -10,10 +10,22 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.sendbeta.R
+import com.example.sendbeta.data.Route
+import com.example.sendbeta.data.SendBetaRepository
 import com.google.android.material.chip.ChipGroup
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import kotlinx.coroutines.launch
 
 class RoutesFragment : Fragment() {
+
+    private val viewModel: RoutesViewModel by viewModels()
+    private lateinit var adapter: RouteAdapter
+    private var allRoutes: List<Route> = emptyList()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -26,93 +38,88 @@ class RoutesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val card1 = view.findViewById<View>(R.id.route_card_1)
-        val card2 = view.findViewById<View>(R.id.route_card_2)
-        val card3 = view.findViewById<View>(R.id.route_card_3)
-        val card4 = view.findViewById<View>(R.id.route_card_4)
-        val emptyState = view.findViewById<View>(R.id.empty_state)
-        val subtitle = view.findViewById<TextView>(R.id.routes_subtitle)
-        val searchInput = view.findViewById<EditText>(R.id.search_input)
-        val chipGroup = view.findViewById<ChipGroup>(R.id.filter_chips)
-
-        // Route click listeners
-        card1?.setOnClickListener {
-            openRouteDetail("The Pink Arête", "Rock Oasis · Toronto", "V5")
+        adapter = RouteAdapter(
+            onClick = { route -> openRouteDetail(route) },
+            onLongClick = { route -> showRouteOptions(route) }
+        )
+        view.findViewById<RecyclerView>(R.id.route_list).apply {
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = this@RoutesFragment.adapter
         }
 
-        card2?.setOnClickListener {
-            openRouteDetail("The Dyno Problem", "Basecamp · Queen West", "V4")
+        // Live data from Room: the list refreshes automatically after add/edit/delete
+        viewModel.routes.observe(viewLifecycleOwner) { routes ->
+            allRoutes = routes
+            applyFilters()
         }
 
-        card3?.setOnClickListener {
-            openRouteDetail("Sloper Traverse", "Joe Rockhead's · Liberty", "V6")
-        }
-
-        card4?.setOnClickListener {
-            openRouteDetail("Quiet Feet", "Boulderz · Etobicoke", "V3")
-        }
-
-        // Add Route button -> CaptureFragment
+        // Add Route button -> create dialog (saved to the database)
         view.findViewById<ImageButton>(R.id.btn_add_route)?.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .replace(R.id.fragment_container, CaptureFragment())
-                .addToBackStack(null)
-                .commit()
+            showRouteDialog(existing = null)
         }
 
-        // Filter and Search logic matching React prototype
-        fun updateVisibility() {
-            val query = searchInput?.text?.toString()?.trim()?.lowercase() ?: ""
-            val checkedChipId = chipGroup?.checkedChipId ?: R.id.chip_all
-
-            // Tag/filter checks
-            val matchChip1 = checkedChipId == R.id.chip_all
-            val matchChip2 = checkedChipId == R.id.chip_all || checkedChipId == R.id.chip_overhang || checkedChipId == R.id.chip_dynamic
-            val matchChip3 = checkedChipId == R.id.chip_all
-            val matchChip4 = checkedChipId == R.id.chip_all || checkedChipId == R.id.chip_slab || checkedChipId == R.id.chip_crimps
-
-            // Query checks
-            val matchQuery1 = query.isEmpty() || "the pink arête rock oasis toronto arête balance".contains(query)
-            val matchQuery2 = query.isEmpty() || "the dyno problem basecamp queen west dyno overhang".contains(query)
-            val matchQuery3 = query.isEmpty() || "sloper traverse joe rockhead liberty slopers roof".contains(query)
-            val matchQuery4 = query.isEmpty() || "quiet feet boulderz etobicoke slab crimps".contains(query)
-
-            val show1 = matchChip1 && matchQuery1
-            val show2 = matchChip2 && matchQuery2
-            val show3 = matchChip3 && matchQuery3
-            val show4 = matchChip4 && matchQuery4
-
-            card1?.visibility = if (show1) View.VISIBLE else View.GONE
-            card2?.visibility = if (show2) View.VISIBLE else View.GONE
-            card3?.visibility = if (show3) View.VISIBLE else View.GONE
-            card4?.visibility = if (show4) View.VISIBLE else View.GONE
-
-            val count = (if (show1) 1 else 0) + (if (show2) 1 else 0) + (if (show3) 1 else 0) + (if (show4) 1 else 0)
-            emptyState?.visibility = if (count == 0) View.VISIBLE else View.GONE
-
-            subtitle?.text = if (query.isEmpty() && checkedChipId == R.id.chip_all) {
-                "4 routes saved across 3 Toronto gyms"
-            } else {
-                "$count routes found"
-            }
-        }
-
-        searchInput?.addTextChangedListener(object : TextWatcher {
+        view.findViewById<EditText>(R.id.search_input)?.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                updateVisibility()
-            }
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) = applyFilters()
             override fun afterTextChanged(s: Editable?) {}
         })
+        view.findViewById<ChipGroup>(R.id.filter_chips)?.setOnCheckedStateChangeListener { _, _ -> applyFilters() }
+    }
 
-        chipGroup?.setOnCheckedStateChangeListener { _, _ ->
-            updateVisibility()
+    /** Search (name, gym, grade, tags) + style chip filter, applied to the routes from the database. */
+    private fun applyFilters() {
+        val v = view ?: return
+        val query = v.findViewById<EditText>(R.id.search_input)?.text?.toString()?.trim()?.lowercase().orEmpty()
+        val chipTag = when (v.findViewById<ChipGroup>(R.id.filter_chips)?.checkedChipId) {
+            R.id.chip_overhang -> "Overhang"
+            R.id.chip_crimps -> "Crimps"
+            R.id.chip_slab -> "Slab"
+            R.id.chip_dynamic -> "Dynamic"
+            else -> null
+        }
+
+        val filtered = allRoutes.filter { route ->
+            val matchesChip = chipTag == null || route.tagList().any { it.equals(chipTag, ignoreCase = true) }
+            val haystack = "${route.name} ${route.gymLabel} ${route.grade} ${route.tags}".lowercase()
+            matchesChip && (query.isEmpty() || haystack.contains(query))
+        }
+        adapter.submitList(filtered)
+
+        v.findViewById<View>(R.id.empty_state)?.visibility = if (filtered.isEmpty()) View.VISIBLE else View.GONE
+        val gymCount = allRoutes.map { it.gymLabel }.distinct().size
+        v.findViewById<TextView>(R.id.routes_subtitle)?.text =
+            if (query.isEmpty() && chipTag == null) "${allRoutes.size} routes saved across $gymCount gyms"
+            else "${filtered.size} routes found"
+    }
+
+    private fun showRouteOptions(route: Route) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle(route.name)
+            .setItems(arrayOf("Edit", "Delete")) { _, which ->
+                when (which) {
+                    0 -> showRouteDialog(existing = route)
+                    1 -> RouteUi.confirmDelete(requireContext(), route.name) { viewModel.deleteRoute(route) }
+                }
+            }
+            .show()
+    }
+
+    private fun showRouteDialog(existing: Route?) {
+        viewLifecycleOwner.lifecycleScope.launch {
+            val gyms = SendBetaRepository.get(requireContext()).getGyms()
+            RouteUi.showRouteDialog(
+                context = requireContext(),
+                gyms = gyms,
+                existing = existing,
+                onSave = { route -> if (existing == null) viewModel.addRoute(route) else viewModel.updateRoute(route) },
+                onDelete = if (existing != null) ({ viewModel.deleteRoute(existing) }) else null
+            )
         }
     }
 
-    private fun openRouteDetail(name: String, gym: String, grade: String) {
+    private fun openRouteDetail(route: Route) {
         parentFragmentManager.beginTransaction()
-            .replace(R.id.fragment_container, RouteDetailFragment.newInstance(name, gym, grade))
+            .replace(R.id.fragment_container, RouteDetailFragment.newInstance(route.id))
             .addToBackStack(null)
             .commit()
     }
