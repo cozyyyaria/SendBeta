@@ -6,7 +6,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [Gym::class, Route::class, Attempt::class], version = 1, exportSchema = false)
+@Database(entities = [Gym::class, Route::class, Attempt::class], version = 2, exportSchema = false)
 abstract class SendBetaDatabase : RoomDatabase() {
 
     abstract fun gymDao(): GymDao
@@ -32,6 +32,8 @@ abstract class SendBetaDatabase : RoomDatabase() {
                             SeedData.populate(db)
                         }
                     })
+                    // Prototype: rebuild (and re-seed) the database when the schema changes
+                    .fallbackToDestructiveMigration()
                     .build()
                     .also { INSTANCE = it }
             }

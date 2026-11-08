@@ -48,6 +48,7 @@ interface AttemptDao {
 
     @Query(
         """SELECT a.id, a.routeId, a.sent, a.note, a.durationMs, a.videoPath, a.source, a.createdAt,
+                  a.startHold, a.cruxHold, a.topHold,
                   r.name AS routeName, r.gymLabel, r.grade, r.color
            FROM attempts a INNER JOIN routes r ON r.id = a.routeId
            ORDER BY a.createdAt DESC LIMIT :limit"""
@@ -56,6 +57,7 @@ interface AttemptDao {
 
     @Query(
         """SELECT a.id, a.routeId, a.sent, a.note, a.durationMs, a.videoPath, a.source, a.createdAt,
+                  a.startHold, a.cruxHold, a.topHold,
                   r.name AS routeName, r.gymLabel, r.grade, r.color
            FROM attempts a INNER JOIN routes r ON r.id = a.routeId
            WHERE a.id = :id"""
@@ -73,6 +75,9 @@ interface AttemptDao {
 
     @Insert
     suspend fun insert(attempt: Attempt): Long
+
+    @Query("UPDATE attempts SET startHold = :start, cruxHold = :crux, topHold = :top WHERE id = :id")
+    suspend fun updateHolds(id: Long, start: String?, crux: String?, top: String?)
 
     @Delete
     suspend fun delete(attempt: Attempt)

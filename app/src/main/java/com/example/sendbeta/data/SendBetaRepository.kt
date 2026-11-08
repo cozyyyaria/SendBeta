@@ -45,14 +45,20 @@ class SendBetaRepository private constructor(
      * storage so it can still be played later (picker/camera Uris are only temporary).
      */
     suspend fun saveAttempt(
-        routeId: Long, sent: Boolean, note: String, durationMs: Long, videoUri: Uri?, source: String
+        routeId: Long, sent: Boolean, note: String, durationMs: Long, videoUri: Uri?, source: String,
+        startHold: String? = null, cruxHold: String? = null, topHold: String? = null
     ): Long {
         val path = videoUri?.let { copyVideo(it) }
         return attemptDao.insert(
             Attempt(routeId = routeId, sent = sent, note = note, durationMs = durationMs,
-                videoPath = path, source = source)
+                videoPath = path, source = source,
+                startHold = startHold, cruxHold = cruxHold, topHold = topHold)
         )
     }
+
+    /** Update the hold annotations of an attempt that's already saved. */
+    suspend fun updateHolds(attemptId: Long, start: String?, crux: String?, top: String?) =
+        attemptDao.updateHolds(attemptId, start, crux, top)
 
     suspend fun deleteAttempt(attempt: Attempt) {
         deleteVideoFile(attempt.videoPath)
