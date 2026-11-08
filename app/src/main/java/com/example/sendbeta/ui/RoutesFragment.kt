@@ -12,6 +12,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sendbeta.R
@@ -42,10 +43,27 @@ class RoutesFragment : Fragment() {
             onClick = { route -> openRouteDetail(route) },
             onLongClick = { route -> showRouteOptions(route) }
         )
-        view.findViewById<RecyclerView>(R.id.route_list).apply {
+        val list = view.findViewById<RecyclerView>(R.id.route_list).apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = this@RoutesFragment.adapter
         }
+
+        // Swipe a route left to delete it (with a confirm step)
+        ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            override fun onMove(rv: RecyclerView, vh: RecyclerView.ViewHolder, target: RecyclerView.ViewHolder) = false
+            override fun onSwiped(vh: RecyclerView.ViewHolder, direction: Int) {
+                val position = vh.bindingAdapterPosition
+                if (position == RecyclerView.NO_POSITION) return
+                val route = adapter.routeAt(position)
+                MaterialAlertDialogBuilder(requireContext())
+                    .setTitle("Delete \"${route.name}\"?")
+                    .setMessage("This also deletes all of its attempts and saved videos.")
+                    .setPositiveButton("Delete") { _, _ -> viewModel.deleteRoute(route) }
+                    .setNegativeButton("Cancel") { _, _ -> adapter.notifyItemChanged(position) }
+                    .setOnCancelListener { adapter.notifyItemChanged(position) }
+                    .show()
+            }
+        }).attachToRecyclerView(list)
 
         // Live data from Room: the list refreshes automatically after add/edit/delete
         viewModel.routes.observe(viewLifecycleOwner) { routes ->

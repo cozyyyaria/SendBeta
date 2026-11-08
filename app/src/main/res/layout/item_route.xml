@@ -140,12 +140,16 @@
             android:textSize="12sp"
             android:textStyle="bold" />
 
-        <!-- Chevron -->
-        <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:layout_marginStart="10dp"
-            android:src="@drawable/ic_chevron_right"
+        <!-- Edit / delete menu -->
+        <ImageButton
+            android:id="@+id/btn_route_options"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_marginStart="6dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Edit or delete route"
+            android:padding="8dp"
+            android:src="@drawable/ic_edit"
             app:tint="@color/muted" />
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

@@ -28,7 +28,11 @@ class RouteAdapter(
         val tag2: TextView = view.findViewById(R.id.tag_2)
         val rating: TextView = view.findViewById(R.id.route_rating)
         val grade: TextView = view.findViewById(R.id.route_grade)
+        val options: View = view.findViewById(R.id.btn_route_options)
     }
+
+    /** Route shown at a position (used by swipe-to-delete). */
+    fun routeAt(position: Int): Route = getItem(position)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RouteViewHolder =
         RouteViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_route, parent, false))
@@ -52,6 +56,7 @@ class RouteAdapter(
 
         holder.itemView.setOnClickListener { onClick(route) }
         holder.itemView.setOnLongClickListener { onLongClick(route); true }
+        holder.options.setOnClickListener { onLongClick(route) } // visible ✎ button = same Edit/Delete menu
     }
 
     companion object {
