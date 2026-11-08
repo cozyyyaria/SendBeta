@@ -154,8 +154,10 @@
         android:gravity="center"
         android:orientation="horizontal"
         android:paddingHorizontal="40dp"
-        android:paddingVertical="24dp"
+        android:paddingVertical="16dp"
+        android:layout_marginBottom="88dp"
         app:layout_constraintBottom_toBottomOf="parent">
+        <!-- marginBottom keeps the buttons above the floating bottom navigation bar (64dp + 16dp margin) -->
 
         <!-- Flip Button -->
         <FrameLayout
