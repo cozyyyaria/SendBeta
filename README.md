@@ -33,7 +33,7 @@ _Add 3–5 screenshots here (Home, Routes, Analyzer, Map). In Android Studio: Ru
 | **Routes** | Full **CRUD**: add a route (+ button), edit or delete it (long-press), search by name/gym/grade/style, filter with chips |
 | **Route Detail** | Notes, style tags, rating, status (Projecting / Sent) and the full attempt history from the database; edit/delete the route, delete an attempt (long-press), share the route, log a new attempt |
 | **Capture** | Record with the device camera app **or import a climbing video** from the device |
-| **Beta Analyzer** | Plays the video with a pose/hold overlay (`BetaAnalyzerOverlayView`), play/pause, scrubbing and 0.5× / 1× / 2× speed. **Save** stores the attempt (route, sent/fell, note, duration, video) in the database |
+| **Beta Analyzer** | **Real pose detection** with Google ML Kit: the climber's skeleton is drawn on the video, the hip path is traced across the clip, and a summary shows detection coverage, vertical progress and highest reach. **Hold annotations**: tap Start/Crux/Top, then tap the hold on the paused video (tap again to move, long-press to remove). Play/pause, scrubbing, 0.5×/1×/2× speed. **Save** stores the attempt (route, sent/fell, note, duration, video, hold positions) in the database |
 | **Gyms Map** | Real OpenStreetMap map with all 12 Toronto climbing gyms (loaded from the database): tap pins or chips, zoom, my location, distance, open/closed from real hours, directions |
 | **About** | App info and a link to this repository |
 
@@ -69,7 +69,8 @@ Data persists between app launches. To reset it, uninstall the app (or clear its
 | Record / import video | ✅ Camera app + file import | In-app CameraX recording |
 | Video playback & analysis controls | ✅ Working | Frame-by-frame stepping |
 | Gym map | ✅ Real map, 12 gyms, directions | Live gym busy-ness |
-| Pose overlay | 🟡 Drawn preview (static skeleton) | Real-time pose detection with Google ML Kit |
+| Pose analysis | ✅ ML Kit pose detection on sampled frames + exact paused frame, hip path, summary | Live tracking during recording, move-by-move breakdown |
+| Hold annotations | ✅ Start / Crux / Top placed on the video, saved per attempt | More hold types, free-form notes on the frame |
 
 ---
 
@@ -80,7 +81,8 @@ Data persists between app launches. To reset it, uninstall the app (or clear its
 - **Data:** Room (SQLite) with KSP, Kotlin Coroutines & Flow, ViewModel + LiveData
 - **Map:** osmdroid (OpenStreetMap), following the OSM tile usage policy
 - **Media:** VideoView / MediaPlayer, camera & file-picker intents (Activity Result API)
-- **Custom drawing:** `Canvas` / `Paint` / `Path` in a custom `View`
+- **Computer vision:** Google ML Kit Pose Detection (on-device, 33 body landmarks) + `MediaMetadataRetriever` frame extraction (`analysis/PoseAnalyzer.kt`)
+- **Custom drawing:** `Canvas` / `Paint` / `Path` in a custom `View`, mapped to the video's on-screen area
 - **Min SDK:** 24 · **Target SDK:** 34
 
 ---
