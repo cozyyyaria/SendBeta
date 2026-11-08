@@ -21,5 +21,8 @@
         
         <!-- Chip style -->
         <item name="chipStyle">@style/Widget.SendBeta.Chip</item>
+
+        <!-- Dialogs: dark, readable buttons instead of lime on white -->
+        <item name="materialAlertDialogTheme">@style/ThemeOverlay.SendBeta.Dialog</item>
     </style>
 </resources>
