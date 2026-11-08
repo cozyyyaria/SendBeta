@@ -8,7 +8,7 @@ android {
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.sendbeta"
+        applicationId = "io.github.cozyyyaria.sendbeta"
         minSdk = 24
         targetSdk = 34
         versionCode = 1

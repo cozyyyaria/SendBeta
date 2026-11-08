@@ -111,9 +111,12 @@ class MapFragment : Fragment() {
         val ctx = requireContext().applicationContext
         Configuration.getInstance().apply {
             load(ctx, ctx.getSharedPreferences("osmdroid", Context.MODE_PRIVATE))
-            userAgentValue = ctx.packageName // OpenStreetMap requires an identifying user agent
+            // OSM tile usage policy: send a unique User-Agent with app name, version and a contact URL
+            // (library defaults like "osmdroid" and generic ids like "com.example.*" are blocked)
+            userAgentValue = "SendBeta/1.0 (+https://github.com/cozyyyaria/SendBeta)"
             osmdroidBasePath = File(ctx.cacheDir, "osmdroid")
-            osmdroidTileCache = File(osmdroidBasePath, "tiles")
+            // Fresh cache folder so previously cached error tiles are never shown
+            osmdroidTileCache = File(osmdroidBasePath, "tiles-osm-v3")
         }
         return inflater.inflate(R.layout.fragment_map, container, false)
     }
@@ -123,6 +126,7 @@ class MapFragment : Fragment() {
 
         val map = view.findViewById<MapView>(R.id.map_view)
         mapView = map
+        // Standard OpenStreetMap tiles (works now that the app sends a descriptive user agent)
         map.setTileSource(TileSourceFactory.MAPNIK)
         map.setMultiTouchControls(true) // pinch to zoom, drag to pan
         map.zoomController.setVisibility(CustomZoomButtonsController.Visibility.NEVER) // we use our own buttons
